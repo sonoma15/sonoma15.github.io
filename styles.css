@@ -31,9 +31,20 @@ button:hover {
     background-color: #45a049;
 }
 
-#dogImageContainer, #catImageContainer {
+#dogImageContainer, #catImageContainer, #rabbitImageContainer {
     display: none;
     margin-top: 20px;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+footer p {
+    margin: 0;
 }
 
 img {

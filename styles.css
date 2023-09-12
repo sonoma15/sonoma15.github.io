@@ -31,7 +31,7 @@ button:hover {
     background-color: #45a049;
 }
 
-#dogImageContainer, #catImageContainer {
+#dogImageContainer, #catImageContainer, #rabbitImageContainer {
     display: none;
     margin-top: 20px;
 }

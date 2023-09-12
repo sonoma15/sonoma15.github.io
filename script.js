@@ -1,8 +1,10 @@
 document.addEventListener("DOMContentLoaded", function() {
     const showDogButton = document.getElementById("showDogButton");
     const showCatButton = document.getElementById("showCatButton");
+    const showRabbitButton = document.getElementById("showRabbitButton");
     const dogImageContainer = document.getElementById("dogImageContainer");
     const catImageContainer = document.getElementById("catImageContainer");
+    const rabbitImageContainer = document.getElementbyId("rabbitImageContainer");
 
     showDogButton.addEventListener("click", function() {
         if (dogImageContainer.style.display === "none") {
@@ -21,6 +23,16 @@ document.addEventListener("DOMContentLoaded", function() {
         } else {
             catImageContainer.style.display = "none";
             showCatButton.textContent = "Show Cat";
+        }
+    });
+
+    showRabbitButton.addEventListener("click", function() {
+        if (rabbitImageContainer.style.display === "none") {
+            rabbitImageContainer.style.display = "block";
+            showRabbitButton.textContent = "Hide Rabbit";
+        } else {
+            rabbitImageContainer.style.display = "none";
+            showRabbitButton.textContent = "Show Rabbit";
         }
     });
 });

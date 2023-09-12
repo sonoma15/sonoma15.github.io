@@ -36,11 +36,6 @@ button:hover {
     margin-top: 20px;
 }
 
-#rabbitImageContainer {
-	display: none;
-	margin-top: 20px;
-}
-
 img {
     max-width: 100%;
     border-radius: 10px;

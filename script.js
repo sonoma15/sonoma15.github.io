@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const showRabbitButton = document.getElementById("showRabbitButton");
     const dogImageContainer = document.getElementById("dogImageContainer");
     const catImageContainer = document.getElementById("catImageContainer");
-    const rabbitImageContainer = document.getElementbyId("rabbitImageContainer");
+    const rabbitImageContainer = document.getElementById("rabbitImageContainer");
 
     showDogButton.addEventListener("click", function() {
         if (dogImageContainer.style.display === "none") {

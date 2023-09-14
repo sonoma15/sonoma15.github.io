@@ -2,9 +2,11 @@ document.addEventListener("DOMContentLoaded", function() {
     const showDogButton = document.getElementById("showDogButton");
     const showCatButton = document.getElementById("showCatButton");
     const showRabbitButton = document.getElementById("showRabbitButton");
+	const showFrogButton = document.getElementById("showFrogButton");
     const dogImageContainer = document.getElementById("dogImageContainer");
     const catImageContainer = document.getElementById("catImageContainer");
     const rabbitImageContainer = document.getElementById("rabbitImageContainer");
+	const frogImageContainer = document.getElementById("frogImageContainer");
 
     showDogButton.addEventListener("click", function() {
         if (dogImageContainer.style.display === "none") {
@@ -33,6 +35,16 @@ document.addEventListener("DOMContentLoaded", function() {
         } else {
             rabbitImageContainer.style.display = "none";
             showRabbitButton.textContent = "Show Rabbit";
+        }
+    });
+	
+	showFrogButton.addEventListener("click", function() {
+        if (frogImageContainer.style.display === "none") {
+            frogImageContainer.style.display = "block";
+            showFrogButton.textContent = "Hide Frog";
+        } else {
+            frogImageContainer.style.display = "none";
+            showFrogButton.textContent = "Show Frog";
         }
     });
 });

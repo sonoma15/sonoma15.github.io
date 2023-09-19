@@ -2,8 +2,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const showDogButton = document.getElementById("showDogButton");
     const showCatButton = document.getElementById("showCatButton");
     const showRabbitButton = document.getElementById("showRabbitButton");
-	  const showFrogButton = document.getElementById("showFrogButton");
-	  const showFishButton = document.getElementById("showFishButton");
+	const showFrogButton = document.getElementById("showFrogButton");
+	const showFishButton = document.getElementById("showFishButton");
     const dogImageContainer = document.getElementById("dogImageContainer");
     const catImageContainer = document.getElementById("catImageContainer");
     const rabbitImageContainer = document.getElementById("rabbitImageContainer");

@@ -4,13 +4,32 @@ document.addEventListener("DOMContentLoaded", function() {
     const showRabbitButton = document.getElementById("showRabbitButton");
 	const showFrogButton = document.getElementById("showFrogButton");
 	const showFishButton = document.getElementById("showFishButton");
+	const showRandomAnimalButton = document.getElementById("showRandomAnimalButton");
     const dogImageContainer = document.getElementById("dogImageContainer");
     const catImageContainer = document.getElementById("catImageContainer");
+	const randomAnimalContainer = document.getElementById("randomAnimalContainer");
     const rabbitImageContainer = document.getElementById("rabbitImageContainer");
   	const frogImageContainer = document.getElementById("frogImageContainer");
 	const fishImageContainer = document.getElementById("fishImageContainer");
+	const randomAnimalImage = document.getElementById("randomAnimalImage");
 
-    showDogButton.addEventListener("click", function() {
+	const animalImages = [
+		"dog_with_sunglasses.jpg",
+		"cool_cat_with_sunglasses.jpg",
+		"rabbit.jpg",
+		"frog.jpg",
+		"fish.jpg"	
+	];
+	
+	showRandomAnimalButton.addEventListener("click", function() {
+		const randomIndex = Math.floor(Math.random() * animalImages.length);
+		
+		randomAnimalImage.src = animalImages[randomIndex];
+		
+		randomAnimalContainer.style.display = "block";
+	});
+	
+   /* showDogButton.addEventListener("click", function() {
         if (dogImageContainer.style.display === "none") {
             dogImageContainer.style.display = "block";
             showDogButton.textContent = "Hide Dog";
@@ -58,5 +77,5 @@ document.addEventListener("DOMContentLoaded", function() {
             fishImageContainer.style.display = "none";
             showFishButton.textContent = "Show Fish";
         }
-    });
+    });*/
 });

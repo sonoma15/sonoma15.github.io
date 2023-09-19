@@ -3,10 +3,12 @@ document.addEventListener("DOMContentLoaded", function() {
     const showCatButton = document.getElementById("showCatButton");
     const showRabbitButton = document.getElementById("showRabbitButton");
 	  const showFrogButton = document.getElementById("showFrogButton");
+	  const showFishButton = document.getElementById("showFishButton");
     const dogImageContainer = document.getElementById("dogImageContainer");
     const catImageContainer = document.getElementById("catImageContainer");
     const rabbitImageContainer = document.getElementById("rabbitImageContainer");
   	const frogImageContainer = document.getElementById("frogImageContainer");
+	const fishImageContainer = document.getElementById("fishImageContainer");
 
     showDogButton.addEventListener("click", function() {
         if (dogImageContainer.style.display === "none") {
@@ -45,6 +47,16 @@ document.addEventListener("DOMContentLoaded", function() {
         } else {
             frogImageContainer.style.display = "none";
             showFrogButton.textContent = "Show Frog";
+        }
+    });
+	
+    showFishButton.addEventListener("click", function() {
+        if (fishImageContainer.style.display === "none") {
+            fishImageContainer.style.display = "block";
+            showFishButton.textContent = "Hide Fish";
+        } else {
+            fishImageContainer.style.display = "none";
+            showFishButton.textContent = "Show Fish";
         }
     });
 });

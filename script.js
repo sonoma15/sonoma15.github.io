@@ -18,7 +18,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		"cool_cat_with_sunglasses.jpg",
 		"rabbit.jpg",
 		"frog.jpg",
-		"fish.jpg"	
+		"fish.jpg",
+		"hamster.jpg"
 	];
 	
 	showRandomAnimalButton.addEventListener("click", function() {

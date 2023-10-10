@@ -19,7 +19,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		"rabbit.jpg",
 		"frog.jpg",
 		"fish.jpg",
-		"hamster.jpg"
+		"hamster.jpg",
+		"airbud.jpg"
 	];
 	
 	showRandomAnimalButton.addEventListener("click", function() {

@@ -20,9 +20,34 @@ document.addEventListener("DOMContentLoaded", function() {
 		"frog.jpg",
 		"fish.jpg",
 		"hamster.jpg",
-		"airbud.jpg"
+		"airbud.jpg",
+		"chicken.jpg",
+		"guineapig.jpg"
 	];
 	
+	/*const animalImagesTest = [
+		{ name: "dog_with_sunglasses.jpg", probability: 0.4},
+		{ name: "frog.jpg", probability: 0.6},
+		{ name: "airbud.jpg", probability: 0.1}
+	];
+	
+	showRandomAnimalButton.addEventListener("click", function() {
+		const random = Math.random();
+		let cumulativeProperty = 0;
+		let selectedAnimal = null;
+		
+		for(const animal of animalImagesTest) {
+			cumulativeProperty += animal.probability
+			if (random < cumulativeProperty) {
+				selectedAnimal = animal.name;
+				break;
+			}
+		}
+		
+		randomAnimalImage.src = selectedAnimal;
+		randomAnimalContainer.style.display = "block";
+	});
+	*/
 	showRandomAnimalButton.addEventListener("click", function() {
 		const randomIndex = Math.floor(Math.random() * animalImages.length);
 		

@@ -25,20 +25,27 @@ document.addEventListener("DOMContentLoaded", function() {
 		"guineapig.jpg"
 	];
 	
-	/*const animalImagesTest = [
-		{ name: "dog_with_sunglasses.jpg", probability: 0.4},
-		{ name: "frog.jpg", probability: 0.6},
-		{ name: "airbud.jpg", probability: 0.1}
+	const animalImagesTest = [
+		{ name: "dog_with_sunglasses.jpg", weight: 5},
+		{ name: "cool_cat_with_sunglasses.jpg", weight: 5},
+		{ name: "rabbit.jpg", weight: 5},
+		{ name: "frog.jpg", weight: 5},		
+		{ name: "fish.jpg", weight: 5},
+		{ name: "hamster.jpg", weight: 5},
+		{ name: "airbud.jpg", weight: 1},
+		{ name: "chicken.jpg", weight: 5},		
+		{ name: "guineapig.jpg", weight: 5},	
 	];
 	
 	showRandomAnimalButton.addEventListener("click", function() {
-		const random = Math.random();
-		let cumulativeProperty = 0;
+		const totalWeight = animalImagesTest.reduce((sum, animal) => sum + animal.weight, 0);
+		const random = Math.random() * totalWeight;
+		let cumulativeWeight = 0;
 		let selectedAnimal = null;
 		
 		for(const animal of animalImagesTest) {
-			cumulativeProperty += animal.probability
-			if (random < cumulativeProperty) {
+			cumulativeWeight += animal.weight;
+			if (random < cumulativeWeight) {
 				selectedAnimal = animal.name;
 				break;
 			}
@@ -47,14 +54,14 @@ document.addEventListener("DOMContentLoaded", function() {
 		randomAnimalImage.src = selectedAnimal;
 		randomAnimalContainer.style.display = "block";
 	});
-	*/
-	showRandomAnimalButton.addEventListener("click", function() {
+	
+	/*showRandomAnimalButton.addEventListener("click", function() {
 		const randomIndex = Math.floor(Math.random() * animalImages.length);
 		
 		randomAnimalImage.src = animalImages[randomIndex];
 		
 		randomAnimalContainer.style.display = "block";
-	});
+	});*/
 	
    /* showDogButton.addEventListener("click", function() {
         if (dogImageContainer.style.display === "none") {

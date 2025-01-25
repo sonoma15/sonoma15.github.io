@@ -8,7 +8,10 @@
 
     // Set the image dimensions (match your image dimensions: 8160 x 6120)
     const bounds = [[0, 0], [8160, 6120]];
+    console.log("Adding image overlay...");
     L.imageOverlay('pinboard.jpg', bounds).addTo(map);
+    console.log("Image overlay added.");
+    
 
     // Fit the map to the image bounds with a more zoomed-in initial view
     map.setView([4080, 3060], 0); // Center the map and set an initial zoom level

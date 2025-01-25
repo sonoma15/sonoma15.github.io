@@ -12,7 +12,7 @@ const map = L.map('map', {
   const bounds = [[0, 0], [imgHeight, imgWidth]];
   
   // Add the image to the map
-  const imageUrl = 'pinboard.jpg'; // Replace with your image URL or local path
+  const imageUrl = './images/pinboard.jpg'; // Replace with your image URL or local path
   L.imageOverlay(imageUrl, bounds).addTo(map);
   
   // Set initial view of the map

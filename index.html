@@ -1,44 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Add CSS for styling -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Pinboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
 </head>
 <body>
-    <div class="login-container">
-        <h1>Login</h1>
-        <form id="login-form">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+  <div id="map"></div>
 
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-
-            <button type="submit">Login</button>
-        </form>
-    </div>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const loginForm = document.getElementById("login-form");
-
-        loginForm.addEventListener("submit", function(event) {
-            event.preventDefault();
-
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-
-            // Simulate a login action (replace with actual authentication logic)
-            if (username === "code" && password === "keem") {
-                alert("Login successful!");
-                // Redirect to index.html upon successful login
-                window.location.href = "page2.html";
-            } else {
-                alert("Login failed. This is a secure website and only people who KNOW the password are allowed on. The FBI has been dispatched to your location and you will be arrested immediately.");
-            }
-        });
-    });
-</script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

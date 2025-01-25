@@ -7,4 +7,8 @@ body {
     height: 8160vh;
     width: 6120vw;
   }
+  img {
+    max-width: 100%;
+    height: auto;
+  }
   

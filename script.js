@@ -1,20 +1,13 @@
-// Initialize the map
+// script.js
 const map = L.map('map', {
-    crs: L.CRS.Simple, // Use a simple coordinate system for images
-    minZoom: -2,       // Allows zooming out
-  });
-  
-  // Define image dimensions (replace with your pinboard image size)
-  const imgWidth = 6120; // Image width in pixels
-  const imgHeight = 8160; // Image height in pixels
-  
-  // Define the bounds of the image
-  const bounds = [[0, 0], [imgHeight, imgWidth]];
-  
-  // Add the image to the map
-  const imageUrl = './pinboard.jpg'; // Replace with your image URL or local path
-  L.imageOverlay(imageUrl, bounds).addTo(map);
-  
+  crs: L.CRS.Simple, // Use a simple CRS for flat images
+  minZoom: -2,       // Allow zooming out
+});
+
+  // Set the image dimensions (update based on your image dimensions)
+  const bounds = [[0, 0], [8160, 6120]]; // Height x Width
+  const image = L.imageOverlay('pinboard.jpg', bounds).addTo(map);
+
   // Set initial view of the map
   map.fitBounds(bounds);
   

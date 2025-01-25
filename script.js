@@ -5,8 +5,8 @@ const map = L.map('map', {
   });
   
   // Define image dimensions (replace with your pinboard image size)
-  const imgWidth = 1000; // Image width in pixels
-  const imgHeight = 800; // Image height in pixels
+  const imgWidth = 6120; // Image width in pixels
+  const imgHeight = 8160; // Image height in pixels
   
   // Define the bounds of the image
   const bounds = [[0, 0], [imgHeight, imgWidth]];

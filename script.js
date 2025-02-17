@@ -1,38 +1,57 @@
-// script.js
-    const map = L.map('map', {
-      crs: L.CRS.Simple, // Use a simple CRS for flat images
-      minZoom: -2,       // Allow zooming out
-      maxZoom: 2,        // Restrict excessive zoom-in
-      zoomSnap: 0.25,    // Allow fine zoom levels
-    });
+const map = L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: -2,
+    maxZoom: 2,
+    zoomSnap: 0.25,
+});
 
-    // Set the image dimensions (match your image dimensions: 8160 x 6120)
-    const bounds = [[0, 0], [8160, 6120]];
-    console.log("Adding image overlay...");
-    L.imageOverlay('pinboard.jpg', bounds).addTo(map);
-    console.log("Image overlay added.");
-    
+const bounds = [[0, 0], [8160, 6120]];
+L.imageOverlay('pinboard.jpg', bounds).addTo(map);
+map.setView([4080, 3060], 0);
 
-    // Fit the map to the image bounds with a more zoomed-in initial view
-    map.setView([4080, 3060], 0); // Center the map and set an initial zoom level
-
-  
-  // Add clickable pins
-  const pins = [
+const pins = [
     {
-      coords: [200, 300], // Y, X coordinates on the image
-      popup: 'This is pin 1 with some information.',
+        coords: [200, 300],
+        popup: '<h2>Pin 1</h2><p>This is pin 1 with some information.  You can include HTML here, like images or links.</p><img src="image1.jpg" width="100">',
+        data: {
+            title: "Pin 1",
+            description: "More details about pin 1",
+            image: "image2.jpg"
+        }
     },
     {
-      coords: [400, 500],
-      popup: 'This is pin 2 with other details.',
+        coords: [400, 500],
+        popup: '<h2>Pin 2</h2><p>This is pin 2 with other details.  You can even have <a href="https://www.example.com">links</a>.</p>',
+        data: {
+            title: "Pin 2",
+            description: "Other details about pin 2",
+            link: "https://www.example.com"
+        }
     },
-  ];
-  
-  // Loop through pins and add markers
-  pins.forEach(pin => {
-    L.marker(pin.coords)
-      .addTo(map)
-      .bindPopup(pin.popup);
-  });
-  
+    // ... more pins
+];
+
+pins.forEach(pin => {
+    L.marker(pin.coords).addTo(map)
+        .bindPopup(pin.popup)
+        .on('click', () => {
+            console.log("Clicked on:", pin.data.title);
+
+            // Example using an alert:
+            // alert(pin.data.description);
+
+            if (pin.data.image) {
+                console.log("Image URL:", pin.data.image);
+            }
+
+            // Or, even better, update another part of your page:
+            // const detailsDiv = document.getElementById("pin-details");
+            // if (detailsDiv) {
+            //     detailsDiv.innerHTML = `<h2>${pin.data.title}</h2><p>${pin.data.description}</p>`;
+            //     if (pin.data.image) {
+            //         detailsDiv.innerHTML += `<img src="${pin.data.image}" width="200">`;
+            //     }
+            // }
+
+        });
+});

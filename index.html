@@ -1,15 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Interactive Pinboard</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pin Collection Gallery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            cursor: pointer; /* Add cursor pointer for better UX */
+        }
+        .gallery-item img {
+            transition: transform 0.3s ease-in-out;
+            width: 100%;
+            display: block;
+        }
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+        .gallery-item-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            border-radius: 0 0 0.5rem 0.5rem;
+        }
+        .gallery-item:hover .gallery-item-info {
+            opacity: 1;
+        }
+        .pagination-link {
+            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+            margin: 0 0.25rem;
+            border: 1px solid #e5e7eb;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .pagination-link:hover {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .pagination-link.active {
+            background-color: #6b7280;
+            color: white;
+            border-color: #6b7280;
+        }
+        .pagination-link.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+            border-color: #e5e7eb;
+            color: #d1d5db;
+        }
+    </style>
 </head>
-<body>
-    <div id="map"></div>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="script.js"></script>
+<body class="bg-gray-100">
+    <header class="bg-white shadow-md py-4">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl font-semibold text-gray-800">My Pin Collection</h1>
+        </div>
+    </header>
+
+    <main class="container mx-auto py-6 px-4">
+        <section id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+            </section>
+
+        <nav id="pagination" class="flex justify-center items-center space-x-2 mb-8">
+            </nav>
+
+        <div id="pin-details" class="bg-white rounded-lg shadow-md p-6 mt-8 hidden">
+            <h2 id="pin-details-name" class="text-2xl font-semibold text-gray-800 mb-4"></h2>
+            <div id="pin-details-image" class="mb-4">
+                <img src="" alt="" class="w-full rounded-md">
+            </div>
+            <table class="min-w-full table-auto rounded-lg hidden" id="pin-details-table">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="px-4 py-2 text-left">Name</th>
+                        <th class="px-4 py-2 text-left">Price</th>
+                        <th class="px-4 py-2 text-left">SKU</th>
+                        <th class="px-4 py-2 text-left">Description</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700">
+                    <tr>
+                        <td id="pin-details-name-table" class="border px-4 py-2"></td>
+                        <td id="pin-details-price" class="border px-4 py-2"></td>
+                        <td id="pin-details-sku" class="border px-4 py-2"></td>
+                        <td id="pin-details-table-description" class="border px-4 py-2"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button id="back-to-gallery" class="mt-6 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Back to Gallery
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white py-4">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 My Pin Collection. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const gallerySection = document.getElementById('gallery');
+        const paginationNav = document.getElementById('pagination');
+        const pinDetailsSection = document.getElementById('pin-details');
+        const pinDetailsName = document.getElementById('pin-details-name');
+        const pinDetailsImage = document.getElementById('pin-details-image').querySelector('img');
+        const pinDetailsDescription = document.getElementById('pin-details-description');
+        const backToGalleryButton = document.getElementById('back-to-gallery');
+        const pinDetailsTable = document.getElementById('pin-details-table');
+        const pinDetailsPriceElement = document.getElementById('pin-details-price');
+        const pinDetailsSkuElement = document.getElementById('pin-details-sku');
+        const pinDetailsTableDescriptionElement = document.getElementById('pin-details-table-description');
+        const pinDetailsNameTableElement = document.getElementById('pin-details-name-table');
+
+
+        const pinsPerPage = 6;
+        let currentPage = 1;
+        let pins = [
+            {
+                name: "Sierra Nevada Brewing Co. Pin",
+                description: "A pin from Sierra Nevada Brewing Co. near Asheville, North Carolina",
+                image: "enamel-pin-1.jpg", // Changed image path
+                price: 12.99,
+                sku: "N/A",
+            },
+            {
+                name: "Hard Enamel Pin",
+                description: "High-quality hard enamel pin with vibrant colors.  This pin is made using a process that results in a smooth, durable finish, perfect for everyday wear.",
+                image: "hard-enamel-pin.jpg", // Changed image path
+                price: 15.99,
+                sku: "HEP002",
+            },
+            {
+                name: "Soft Enamel Pin",
+                description: "Soft enamel pin with a textured surface.  The textured surface of this pin adds depth and character, giving it a unique tactile quality.",
+                image: "soft-enamel-pin.jpg", // Changed image path
+                price: 10.99,
+                sku: "SEP003",
+            },
+            {
+                name: "Glitter Pin",
+                description: "Sparkly glitter pin that catches the light. This pin is embedded with fine glitter particles that shimmer and shine, adding a touch of glamour to any collection.",
+                image: "glitter-pin.jpg", // Changed image path
+                price: 14.99,
+                sku: "GP004",
+            },
+            {
+                name: "Badge Pin",
+                description: "Classic badge pin with a simple design.  This pin features a clean and minimalist design, making it a versatile accessory for any occasion.",
+                image: "badge-pin.jpg", // Changed image path
+                price: 8.99,
+                sku: "BP005",
+            },
+            {
+                name: "Lapel Pin",
+                description: "Elegant lapel pin for formal occasions.  This pin is designed to add a touch of sophistication to formal attire, making it a perfect accessory for special events.",
+                image: "lapel-pin.jpg", // Changed image path
+                price: 17.99,
+                sku: "LP006",
+            },
+            {
+                name: "Custom Pin 1",
+                description: "A custom-designed pin for a special event.  This pin was created to commemorate a specific event, making it a unique and meaningful keepsake.",
+                image: "custom-pin-1.jpg", // Changed image path
+                price: 20.00,
+                sku: "CP007",
+            },
+            {
+                name: "Custom Pin 2",
+                description: "Another custom pin with a unique theme. This pin showcases a creative and original design, reflecting a specific theme or interest.",
+                image: "custom-pin-2.jpg", // Changed image path
+                price: 22.00,
+                sku: "CP008",
+            },
+            {
+                name: "Limited Edition Pin",
+                description: "A rare, limited edition pin for collectors.  This pin is one of a limited number produced, making it a highly sought-after item for collectors.",
+                image: "limited-edition-pin.jpg", // Changed image path
+                price: 25.00,
+                sku: "LEP009",
+            },
+            {
+                name: "Vintage Pin",
+                description: "A vintage pin with a classic design.  This pin features a timeless design from a bygone era, adding a touch of nostalgia to any collection.",
+                image: "vintage-pin.jpg", // Changed image path
+                price: 18.50,
+                sku: "VP010",
+            },
+            {
+                name: "Character Pin",
+                description: "A pin featuring a beloved character.  This pin showcases a popular character from a book, movie, or game, making it a fun andcollectible item.",
+                image: "character-pin.jpg", // Changed image path
+                price: 16.00,
+                sku: "CHP011",
+            },
+            {
+                name: "Logo Pin",
+                description: "A pin featuring a company or brand logo. This pin displays the logo of a well-known company or brand, making it a great way to show your support.",
+                image: "logo-pin.jpg", // Changed image path
+                price: 11.50,
+                sku: "LGP012",
+            },
+        ];
+
+        function displayPins() {
+            gallerySection.innerHTML = '';
+            const start = (currentPage - 1) * pinsPerPage;
+            const end = start + pinsPerPage;
+            const currentPins = pins.slice(start, end);
+
+            currentPins.forEach(pin => {
+                const pinElement = document.createElement('div');
+                pinElement.className = 'gallery-item';
+                pinElement.innerHTML = `
+                    <img src="${pin.image}" alt="${pin.name}">
+                    <div class="gallery-item-info">
+                        <h3 class="text-lg font-semibold">${pin.name}</h3>
+                        <p>${pin.description}</p>
+                    </div>
+                `;
+                pinElement.addEventListener('click', () => showPinDetails(pin)); // Add click event listener
+                gallerySection.appendChild(pinElement);
+            });
+        }
+
+        function generatePagination() {
+            paginationNav.innerHTML = '';
+            const totalPages = Math.ceil(pins.length / pinsPerPage);
+
+            const prevLink = document.createElement('a');
+            prevLink.className = `pagination-link ${currentPage === 1 ? 'disabled' : ''}`;
+            prevLink.textContent = 'Previous';
+            prevLink.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayPins();
+                    generatePagination();
+                }
+            });
+            paginationNav.appendChild(prevLink);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageLink = document.createElement('a');
+                pageLink.className = `pagination-link ${currentPage === i ? 'active' : ''}`;
+                pageLink.textContent = i;
+                pageLink.addEventListener('click', () => {
+                    currentPage = i;
+                    displayPins();
+                    generatePagination();
+                });
+                paginationNav.appendChild(pageLink);
+            }
+
+            const nextLink = document.createElement('a');
+            nextLink.className = `pagination-link ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextLink.textContent = 'Next';
+            nextLink.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayPins();
+                    generatePagination();
+                }
+            });
+            paginationNav.appendChild(nextLink);
+        }
+
+        function showPinDetails(pin) {
+            pinDetailsName.textContent = pin.name;
+            pinDetailsImage.src = pin.image;
+            pinDetailsImage.alt = pin.name;
+            pinDetailsPriceElement.textContent = `$${pin.price.toFixed(2)}`;
+            pinDetailsSkuElement.textContent = pin.sku;
+            pinDetailsTableDescriptionElement.textContent = pin.description; // Added Description to table
+            pinDetailsNameTableElement.textContent = pin.name;
+            gallerySection.classList.add('hidden');
+            paginationNav.classList.add('hidden');
+            pinDetailsSection.classList.remove('hidden');
+            pinDetailsTable.classList.remove('hidden'); //show table
+        }
+
+        backToGalleryButton.addEventListener('click', () => {
+            pinDetailsSection.classList.add('hidden');
+            gallerySection.classList.remove('hidden');
+            paginationNav.classList.remove('hidden');
+            pinDetailsTable.classList.add('hidden'); //hide table
+        });
+
+        displayPins();
+        generatePagination();
+    </script>
 </body>
 </html>

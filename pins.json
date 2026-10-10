@@ -47,5 +47,12 @@
     "price": 200,
     "sku": "N/A",
     "description": "An exclusive pin created for the opening team of Monsters Unchained at Epic Universe."
+  },
+  {
+    "name": "Monsters Unchained Manor",
+    "image": "Pins/1791650707690_20250314_212639.jpg",
+    "price": 6.67,
+    "sku": "56643-P4444-0724",
+    "description": "Frankenstein Manor from Epic Universe. Part of the Frankenstein Manor pin set."
   }
 ]

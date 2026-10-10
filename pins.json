@@ -1,44 +1,44 @@
 [
-    {
-        "name": "Sierra Nevada Brewing Co. Pin",
-        "description": "A pin from Sierra Nevada Brewing Co. near Asheville, North Carolina",
-        "image": "Pins/enamel-pin-1.jpg",
-        "price": 12.99,
-        "sku": "N/A"
-    },
-    {
-        "name": "Ole Smoky Moonshine",
-        "description": "A pin from Ole Smoky Tennessee Moonshine located in Pigeon Forge, Tennessee.",
-        "image": "Pins/olesmoky.jpg",
-        "price": 6.99,
-        "sku": "N/A"
-    },
-    {
-        "name": "Miami Dolphin Retro Pin",
-        "description": "A pin of the retro Miami Dolphins logo, acquired from Hard Rock Stadium.",
-        "image": "Pins/dolphin.jpg",
-        "price": 9.00,
-        "sku": "NFL-54624322"
-    },
-    {
-        "name": "WDW - Pandora Scenic Portrait",
-        "description": "A pin depicting the bioluminescent landscape of pandora. Acquired from Disney Character Warehouse, originally sold in windtraders at Animal Kingdom",
-        "image": "Pins/pandora.jpg",
-        "price": 9.99,
-        "sku": "400947716178"
-    },
-    {
-        "name": "SDR - Grand Opening Roaring Mountain",
-        "description": "A pin from the grand opening of Shanghai Disneyland, the one I own is likely a knock-off. Acquired from pin trading in Disney Springs.",
-        "image": "Pins/roaringmountain.jpg",
-        "price": 269.00,
-        "sku": "400060085601"
-    },
-    {
-        "name": "Yeti Pin",
-        "description": "A pin from the 2017 attraction icons set depicting the yeti from Expedition Everest. Likely a knock-off pin and was acquired from pin trading.",
-        "image": "Pins/yeti.jpg",
-        "price": 12.99,
-        "sku": "N/A"
-    }
+  {
+    "name": "Sierra Nevada Brewing Co. Pin",
+    "description": "A pin from Sierra Nevada Brewing Co. near Asheville, North Carolina",
+    "image": "Pins/enamel-pin-1.jpg",
+    "price": 12.99,
+    "sku": "N/A"
+  },
+  {
+    "name": "Ole Smoky Moonshine",
+    "description": "A pin from Ole Smoky Tennessee Moonshine located in Pigeon Forge, Tennessee.",
+    "image": "Pins/olesmoky.jpg",
+    "price": 6.99,
+    "sku": "N/A"
+  },
+  {
+    "name": "Miami Dolphin Retro Pin",
+    "description": "A pin of the retro Miami Dolphins logo, acquired from Hard Rock Stadium.",
+    "image": "Pins/dolphin.jpg",
+    "price": 9,
+    "sku": "NFL-54624322"
+  },
+  {
+    "name": "WDW - Pandora Scenic Portrait",
+    "description": "A pin depicting the bioluminescent landscape of pandora. Acquired from Disney Character Warehouse, originally sold in windtraders at Animal Kingdom",
+    "image": "Pins/pandora.jpg",
+    "price": 9.99,
+    "sku": "400947716178"
+  },
+  {
+    "name": "SDR - Grand Opening Roaring Mountain",
+    "image": "Pins/roaringmountain.jpg",
+    "price": 0.5,
+    "sku": "400060085601",
+    "description": "A pin from the grand opening of Shanghai Disneyland, the one I own is likely a knock-off. Acquired from pin trading in Disney Springs."
+  },
+  {
+    "name": "Yeti Pin",
+    "description": "A pin from the 2017 attraction icons set depicting the yeti from Expedition Everest. Likely a knock-off pin and was acquired from pin trading.",
+    "image": "Pins/yeti.jpg",
+    "price": 12.99,
+    "sku": "N/A"
+  }
 ]

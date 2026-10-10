@@ -43,33 +43,38 @@
 
         <!-- Management Area (Hidden until connected) -->
         <div id="admin-content" class="hidden space-y-6">
-            <!-- Add New Pin Form -->
+            <!-- Add / Edit Pin Form -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-4">Add New Pin</h2>
-                <form id="add-pin-form" onsubmit="handleAddNewPin(event)" class="space-y-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="form-title" class="text-lg font-semibold text-gray-800">Add New Pin</h2>
+                    <button id="cancel-edit-btn" onclick="resetForm()" class="hidden text-xs font-semibold text-gray-500 hover:text-gray-800 bg-gray-100 px-2.5 py-1 rounded-lg">Cancel Edit</button>
+                </div>
+                
+                <form id="pin-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                    <input type="hidden" id="edit-index" value="-1">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Pin Name</label>
-                            <input type="text" id="new-name" required class="w-full border border-gray-300 rounded-lg p-2 text-sm">
+                            <input type="text" id="pin-name" required class="w-full border border-gray-300 rounded-lg p-2 text-sm">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Image Path</label>
-                            <input type="text" id="new-image" value="Pins/" required class="w-full border border-gray-300 rounded-lg p-2 text-sm">
+                            <input type="text" id="pin-image" value="Pins/" required class="w-full border border-gray-300 rounded-lg p-2 text-sm">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Price ($)</label>
-                            <input type="number" step="0.01" id="new-price" required class="w-full border border-gray-300 rounded-lg p-2 text-sm">
+                            <input type="number" step="0.01" id="pin-price" required class="w-full border border-gray-300 rounded-lg p-2 text-sm">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">SKU (or N/A)</label>
-                            <input type="text" id="new-sku" value="N/A" required class="w-full border border-gray-300 rounded-lg p-2 text-sm">
+                            <input type="text" id="pin-sku" value="N/A" required class="w-full border border-gray-300 rounded-lg p-2 text-sm">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 uppercase mb-1">Description</label>
-                        <textarea id="new-desc" rows="2" required class="w-full border border-gray-300 rounded-lg p-2 text-sm"></textarea>
+                        <textarea id="pin-desc" rows="2" required class="w-full border border-gray-300 rounded-lg p-2 text-sm"></textarea>
                     </div>
-                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">Add Pin to Collection</button>
+                    <button type="submit" id="submit-btn" class="bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">Add Pin to Collection</button>
                 </form>
             </div>
 
@@ -87,7 +92,6 @@
         let pins = [];
         let fileSha = '';
 
-        // Load saved credentials from localStorage if available
         window.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('gh_owner')) document.getElementById('gh-owner').value = localStorage.getItem('gh_owner');
             if (localStorage.getItem('gh_repo')) document.getElementById('gh-repo').value = localStorage.getItem('gh_repo');
@@ -104,7 +108,6 @@
                 return;
             }
 
-            // Save credentials locally for convenience
             localStorage.setItem('gh_owner', owner);
             localStorage.setItem('gh_repo', repo);
             localStorage.setItem('gh_token', token);
@@ -143,27 +146,66 @@
                             <p class="text-xs text-gray-500">$${pin.price.toFixed(2)} • SKU: ${pin.sku}</p>
                         </div>
                     </div>
-                    <button onclick="deletePin(${index})" class="text-red-600 hover:text-red-800 text-xs font-semibold px-3 py-1.5 bg-red-50 rounded-lg transition-colors">Delete</button>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="editPin(${index})" class="text-blue-600 hover:text-blue-800 text-xs font-semibold px-3 py-1.5 bg-blue-50 rounded-lg transition-colors">Edit</button>
+                        <button onclick="deletePin(${index})" class="text-red-600 hover:text-red-800 text-xs font-semibold px-3 py-1.5 bg-red-50 rounded-lg transition-colors">Delete</button>
+                    </div>
                 `;
                 container.appendChild(div);
             });
         }
 
-        async function handleAddNewPin(e) {
+        function editPin(index) {
+            const pin = pins[index];
+            document.getElementById('edit-index').value = index;
+            document.getElementById('pin-name').value = pin.name;
+            document.getElementById('pin-image').value = pin.image;
+            document.getElementById('pin-price').value = pin.price;
+            document.getElementById('pin-sku').value = pin.sku;
+            document.getElementById('pin-desc').value = pin.description;
+
+            document.getElementById('form-title').textContent = 'Edit Pin: ' + pin.name;
+            document.getElementById('submit-btn').textContent = 'Update Pin';
+            document.getElementById('submit-btn').className = 'bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors';
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetForm() {
+            document.getElementById('pin-form').reset();
+            document.getElementById('edit-index').value = '-1';
+            document.getElementById('pin-image').value = 'Pins/';
+            document.getElementById('pin-sku').value = 'N/A';
+            document.getElementById('form-title').textContent = 'Add New Pin';
+            document.getElementById('submit-btn').textContent = 'Add Pin to Collection';
+            document.getElementById('submit-btn').className = 'bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors';
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+        }
+
+        async function handleFormSubmit(e) {
             e.preventDefault();
-            const newPin = {
-                name: document.getElementById('new-name').value.trim(),
-                image: document.getElementById('new-image').value.trim(),
-                price: parseFloat(document.getElementById('new-price').value),
-                sku: document.getElementById('new-sku').value.trim(),
-                description: document.getElementById('new-desc').value.trim()
+            const editIndex = parseInt(document.getElementById('edit-index').value);
+            
+            const pinData = {
+                name: document.getElementById('pin-name').value.trim(),
+                image: document.getElementById('pin-image').value.trim(),
+                price: parseFloat(document.getElementById('pin-price').value),
+                sku: document.getElementById('pin-sku').value.trim(),
+                description: document.getElementById('pin-desc').value.trim()
             };
 
-            pins.push(newPin);
-            await savePinsToGitHub('Add pin: ' + newPin.name);
-            document.getElementById('add-pin-form').reset();
-            document.getElementById('new-image').value = 'Pins/';
-            document.getElementById('new-sku').value = 'N/A';
+            let commitMsg = '';
+            if (editIndex === -1) {
+                pins.push(pinData);
+                commitMsg = 'Add pin: ' + pinData.name;
+            } else {
+                pins[editIndex] = pinData;
+                commitMsg = 'Update pin: ' + pinData.name;
+            }
+
+            await savePinsToGitHub(commitMsg);
+            resetForm();
         }
 
         async function deletePin(index) {
@@ -199,7 +241,7 @@
                 }
 
                 const data = await res.json();
-                fileSha = data.content.sha; // update SHA for next commit
+                fileSha = data.content.sha;
                 renderAdminPins();
                 alert('Changes saved successfully! GitHub Pages will update in about 30 seconds.');
             } catch (err) {

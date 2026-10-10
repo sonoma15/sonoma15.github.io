@@ -139,8 +139,6 @@
                 pins = await response.json();
                 
                 // Call your render functions here!
-                displayPins();       // (for index.html)
-                generatePagination(); // (for index.html)
                 calculateStatistics(); // (for stats.html)
             } catch (error) {
                 console.error('Error loading pin data:', error);

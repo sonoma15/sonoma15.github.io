@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pin Collection Statistics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-md py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-3xl font-semibold text-gray-800">Collection Statistics</h1>
+            <a href="index.html" class="inline-flex items-center text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Back to Gallery
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto py-8 px-4 flex-grow">
+        <!-- Summary Cards Grid -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Pins -->
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Total Pins</p>
+                    <p id="total-pins" class="text-3xl font-bold text-gray-800 mt-1">0</p>
+                </div>
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-full">
+                    <i class="fa-solid fa-map-pin fa-2x"></i>
+                </div>
+            </div>
+
+            <!-- Total Estimated Value -->
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Total Value</p>
+                    <p id="total-value" class="text-3xl font-bold text-gray-800 mt-1">$0.00</p>
+                </div>
+                <div class="p-3 bg-green-100 text-green-600 rounded-full">
+                    <i class="fa-solid fa-sack-dollar fa-2x"></i>
+                </div>
+            </div>
+
+            <!-- Average Value per Pin -->
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Avg. Pin Value</p>
+                    <p id="avg-value" class="text-3xl font-bold text-gray-800 mt-1">$0.00</p>
+                </div>
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-full">
+                    <i class="fa-solid fa-chart-line fa-2x"></i>
+                </div>
+            </div>
+
+            <!-- Pins with SKU -->
+            <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-amber-500 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">SKU Tracked</p>
+                    <p id="sku-count" class="text-3xl font-bold text-gray-800 mt-1">0</p>
+                </div>
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-full">
+                    <i class="fa-solid fa-barcode fa-2x"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detailed Breakdown -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Highest & Lowest Value Pins -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Valuation Highlights</h2>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                            <span class="text-xs font-semibold uppercase text-green-600 bg-green-100 px-2 py-1 rounded">Most Valuable</span>
+                            <h3 id="highest-pin-name" class="font-semibold text-gray-800 mt-2">--</h3>
+                            <p id="highest-pin-desc" class="text-xs text-gray-500 line-clamp-1">--</p>
+                        </div>
+                        <span id="highest-pin-price" class="text-xl font-bold text-green-600 ml-4">$0.00</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                            <span class="text-xs font-semibold uppercase text-blue-600 bg-blue-100 px-2 py-1 rounded">Most Accessible</span>
+                            <h3 id="lowest-pin-name" class="font-semibold text-gray-800 mt-2">--</h3>
+                            <p id="lowest-pin-desc" class="text-xs text-gray-500 line-clamp-1">--</p>
+                        </div>
+                        <span id="lowest-pin-price" class="text-xl font-bold text-blue-600 ml-4">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Item Breakdown Table -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Collection Breakdown</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-left text-sm text-gray-600">
+                        <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+                            <tr>
+                                <th class="py-2 px-3">Item Name</th>
+                                <th class="py-2 px-3 text-right">Price</th>
+                                <th class="py-2 px-3 text-center">SKU Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table-body" class="divide-y divide-gray-200">
+                            <!-- Rows populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-4 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 My Pin Collection. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Collection data matching index.html
+        const pins = [
+            {
+                name: "Sierra Nevada Brewing Co. Pin",
+                description: "A pin from Sierra Nevada Brewing Co. near Asheville, North Carolina",
+                image: "Pins/enamel-pin-1.jpg",
+                price: 12.99,
+                sku: "N/A",
+            },
+            {
+                name: "Ole Smoky Moonshine",
+                description: "A pin from Ole Smoky Tennessee Moonshine located in Pigeon Forge, Tennessee.",
+                image: "Pins/olesmoky.jpg",
+                price: 6.99,
+                sku: "N/A",
+            },
+            {
+                name: "Miami Dolphin Retro Pin",
+                description: "A pin of the retro Miami Dolphins logo, acquired from Hard Rock Stadium.",
+                image: "Pins/dolphin.jpg",
+                price: 9.00,
+                sku: "NFL-54624322",
+            },
+            {
+                name: "WDW - Pandora Scenic Portrait",
+                description: "A pin depicting the bioluminescent landscape of pandora. Acquired from Disney Character Warehouse, originally sold in windtraders at Animal Kingdom",
+                image: "Pins/pandora.jpg",
+                price: 9.99,
+                sku: "400947716178",
+            },
+            {
+                name: "SDR - Grand Opening Roaring Mountain",
+                description: "A pin from the grand opening of Shanghai Disneyland, the one I own is likely a knock-off. Acquired from pin trading in Disney Springs.",
+                image: "Pins/roaringmountain.jpg",
+                price: 269.00,
+                sku: "400060085601",
+            },
+            {
+                name: "Yeti Pin",
+                description: "A pin from the 2017 attraction icons set depicting the yeti from Expedition Everest. Likely a knock-off pin and was acquired from pin trading.",
+                image: "Pins/yeti.jpg",
+                price: 12.99,
+                sku: "N/A",
+            },
+        ];
+
+        function calculateStatistics() {
+            const totalPins = pins.length;
+            if (totalPins === 0) return;
+
+            const totalValue = pins.reduce((sum, pin) => sum + pin.price, 0);
+            const avgValue = totalValue / totalPins;
+            const skuTracked = pins.filter(pin => pin.sku && pin.sku !== "N/A").length;
+
+            // Sort pins by price
+            const sortedPins = [...pins].sort((a, b) => b.price - a.price);
+            const highestPin = sortedPins[0];
+            const lowestPin = sortedPins[sortedPins.length - 1];
+
+            // Render Overview Cards
+            document.getElementById('total-pins').textContent = totalPins;
+            document.getElementById('total-value').textContent = `$${totalValue.toFixed(2)}`;
+            document.getElementById('avg-value').textContent = `$${avgValue.toFixed(2)}`;
+            document.getElementById('sku-count').textContent = `${skuTracked} / ${totalPins}`;
+
+            // Render Valuation Highlights
+            document.getElementById('highest-pin-name').textContent = highestPin.name;
+            document.getElementById('highest-pin-desc').textContent = highestPin.description;
+            document.getElementById('highest-pin-price').textContent = `$${highestPin.price.toFixed(2)}`;
+
+            document.getElementById('lowest-pin-name').textContent = lowestPin.name;
+            document.getElementById('lowest-pin-desc').textContent = lowestPin.description;
+            document.getElementById('lowest-pin-price').textContent = `$${lowestPin.price.toFixed(2)}`;
+
+            // Render Inventory Table
+            const tbody = document.getElementById('inventory-table-body');
+            tbody.innerHTML = '';
+            pins.forEach(pin => {
+                const hasSku = pin.sku && pin.sku !== "N/A";
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="py-2.5 px-3 font-medium text-gray-800">${pin.name}</td>
+                    <td class="py-2.5 px-3 text-right font-semibold text-gray-700">$${pin.price.toFixed(2)}</td>
+                    <td class="py-2.5 px-3 text-center">
+                        <span class="text-xs px-2 py-0.5 rounded ${hasSku ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}">
+                            ${hasSku ? pin.sku : 'None'}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', calculateStatistics);
+    </script>
+</body>
+</html>

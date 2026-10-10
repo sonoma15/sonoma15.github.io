@@ -40,5 +40,12 @@
     "image": "Pins/yeti.jpg",
     "price": 12.99,
     "sku": "N/A"
+  },
+  {
+    "name": "Monsters Unchained Opening Team",
+    "image": "Pins/1791649391401_20250509_233254.jpg",
+    "price": 200,
+    "sku": "N/A",
+    "description": "An exclusive pin created for the opening team of Monsters Unchained at Epic Universe."
   }
 ]

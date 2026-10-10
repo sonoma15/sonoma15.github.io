@@ -16,32 +16,25 @@
         .gallery-item {
             position: relative;
             overflow: hidden;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            cursor: pointer; /* Add cursor pointer for better UX */
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            cursor: pointer;
+            background-color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .gallery-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
         .gallery-item img {
-            transition: transform 0.3s ease-in-out;
+            transition: transform 0.5s ease;
             width: 100%;
+            height: 220px;
+            object-fit: cover;
             display: block;
         }
         .gallery-item:hover img {
-            transform: scale(1.1);
-        }
-        .gallery-item-info {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 1rem;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-            border-radius: 0 0 0.5rem 0.5rem;
-        }
-        .gallery-item:hover .gallery-item-info {
-            opacity: 1;
+            transform: scale(1.05);
         }
         .pagination-link {
             border-radius: 0.375rem;
@@ -50,74 +43,99 @@
             border: 1px solid #e5e7eb;
             color: #374151;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            background-color: white;
         }
         .pagination-link:hover {
             background-color: #f3f4f6;
             color: #1f2937;
         }
         .pagination-link.active {
-            background-color: #6b7280;
+            background-color: #2563eb;
             color: white;
-            border-color: #6b7280;
+            border-color: #2563eb;
         }
         .pagination-link.disabled {
             opacity: 0.5;
             cursor: not-allowed;
             pointer-events: none;
-            border-color: #e5e7eb;
-            color: #d1d5db;
+            background-color: #f9fafb;
         }
     </style>
 </head>
-<body class="bg-gray-100">
-    <header class="bg-white shadow-md py-4">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <h1 class="text-3xl font-semibold text-gray-800">Pin Collection</h1>
-            <a href="stats.html" class="inline-flex items-center text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors">
-                <i class="fa-solid fa-chart-pie mr-2"></i> View Statistics
-            </a>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-blue-600 text-white p-2.5 rounded-lg">
+                    <i class="fa-solid fa-map-pin"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-800">Pin Collection</h1>
+                    <p class="text-xs text-gray-500">Personal Souvenir & Memorabilia Showcase</p>
+                </div>
+            </div>
+            <nav class="flex items-center space-x-4">
+                <a href="stats.html" class="inline-flex items-center text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 px-3.5 py-2 rounded-lg transition-colors">
+                    <i class="fa-solid fa-chart-pie mr-2 text-blue-600"></i> View Statistics
+                </a>
+            </nav>
         </div>
     </header>
 
-    <main class="container mx-auto py-6 px-4">
-        <section id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-            </section>
+    <!-- Main Content -->
+    <main class="container mx-auto py-8 px-4 flex-grow">
+        <!-- Gallery Grid Section -->
+        <section id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Dynamic Cards Populated Here -->
+        </section>
 
-        <nav id="pagination" class="flex justify-center items-center space-x-2 mb-8">
-            </nav>
+        <!-- Pagination -->
+        <nav id="pagination" class="flex justify-center items-center space-x-1 mb-8">
+            <!-- Dynamic Pagination Links Here -->
+        </nav>
 
-        <div id="pin-details" class="bg-white rounded-lg shadow-md p-6 mt-8 hidden">
-            <h2 id="pin-details-name" class="text-2xl font-semibold text-gray-800 mb-4"></h2>
-            <div id="pin-details-image" class="mb-4">
-                <img src="" alt="" class="w-full rounded-md">
-            </div>
-            <table class="min-w-full table-auto rounded-lg hidden" id="pin-details-table">
-                <thead class="bg-gray-200">
-                    <tr>
-                        <th class="px-4 py-2 text-left">Name</th>
-                        <th class="px-4 py-2 text-left">Price</th>
-                        <th class="px-4 py-2 text-left">SKU</th>
-                        <th class="px-4 py-2 text-left">Description</th>
-                    </tr>
-                </thead>
-                <tbody class="text-gray-700">
-                    <tr>
-                        <td id="pin-details-name-table" class="border px-4 py-2"></td>
-                        <td id="pin-details-price" class="border px-4 py-2"></td>
-                        <td id="pin-details-sku" class="border px-4 py-2"></td>
-                        <td id="pin-details-table-description" class="border px-4 py-2"></td>
-                    </tr>
-                </tbody>
-            </table>
-            <button id="back-to-gallery" class="mt-6 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                Back to Gallery
+        <!-- Pin Details View (Hidden by Default) -->
+        <div id="pin-details" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8 mt-4 hidden">
+            <button id="back-to-gallery" class="inline-flex items-center text-sm font-semibold text-gray-600 hover:text-gray-900 mb-6 transition-colors">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Back to Gallery
             </button>
-        </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                <div id="pin-details-image" class="bg-gray-100 rounded-lg overflow-hidden border border-gray-100">
+                    <img src="" alt="" class="w-full h-auto max-h-[400px] object-contain mx-auto">
+                </div>
+                
+                <div class="flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start gap-4 mb-2">
+                            <h2 id="pin-details-name" class="text-2xl font-bold text-gray-900"></h2>
+                            <span id="pin-details-price" class="text-lg font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full whitespace-nowrap"></span>
+                        </div>
+                        <p id="pin-details-table-description" class="text-gray-600 text-sm leading-relaxed mb-6"></p>
+                    </div>
 
+                    <div class="border-t border-gray-100 pt-4">
+                        <h3 class="text-xs font-semibold uppercase text-gray-400 tracking-wider mb-3">Item Specifications</h3>
+                        <div class="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg text-sm">
+                            <div>
+                                <span class="block text-gray-500 text-xs">SKU Number</span>
+                                <span id="pin-details-sku" class="font-medium text-gray-800"></span>
+                            </div>
+                            <div>
+                                <span class="block text-gray-500 text-xs">Catalog Name</span>
+                                <span id="pin-details-name-table" class="font-medium text-gray-800 truncate block"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <footer class="bg-gray-800 text-white py-4">
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-6 text-gray-500 text-sm">
         <div class="container mx-auto px-4 text-center">
             <p>&copy; 2024 My Pin Collection. All rights reserved.</p>
         </div>
@@ -129,14 +147,11 @@
         const pinDetailsSection = document.getElementById('pin-details');
         const pinDetailsName = document.getElementById('pin-details-name');
         const pinDetailsImage = document.getElementById('pin-details-image').querySelector('img');
-        const pinDetailsDescription = document.getElementById('pin-details-description');
         const backToGalleryButton = document.getElementById('back-to-gallery');
-        const pinDetailsTable = document.getElementById('pin-details-table');
         const pinDetailsPriceElement = document.getElementById('pin-details-price');
         const pinDetailsSkuElement = document.getElementById('pin-details-sku');
         const pinDetailsTableDescriptionElement = document.getElementById('pin-details-table-description');
         const pinDetailsNameTableElement = document.getElementById('pin-details-name-table');
-
 
         const pinsPerPage = 6;
         let currentPage = 1;
@@ -144,42 +159,42 @@
             {
                 name: "Sierra Nevada Brewing Co. Pin",
                 description: "A pin from Sierra Nevada Brewing Co. near Asheville, North Carolina",
-                image: "Pins/enamel-pin-1.jpg", // Changed image path
+                image: "Pins/enamel-pin-1.jpg",
                 price: 12.99,
                 sku: "N/A",
             },
             {
                 name: "Ole Smoky Moonshine",
                 description: "A pin from Ole Smoky Tennessee Moonshine located in Pigeon Forge, Tennessee.",
-                image: "Pins/olesmoky.jpg", // Changed image path
+                image: "Pins/olesmoky.jpg",
                 price: 6.99,
                 sku: "N/A",
             },
             {
                 name: "Miami Dolphin Retro Pin",
                 description: "A pin of the retro Miami Dolphins logo, acquired from Hard Rock Stadium.",
-                image: "Pins/dolphin.jpg", // Changed image path
+                image: "Pins/dolphin.jpg",
                 price: 9.00,
                 sku: "NFL-54624322",
             },
             {
                 name: "WDW - Pandora Scenic Portrait",
                 description: "A pin depicting the bioluminescent landscape of pandora. Acquired from Disney Character Warehouse, originally sold in windtraders at Animal Kingdom",
-                image: "Pins/pandora.jpg", // Changed image path
+                image: "Pins/pandora.jpg",
                 price: 9.99,
                 sku: "400947716178",
             },
             {
                 name: "SDR - Grand Opening Roaring Mountain",
                 description: "A pin from the grand opening of Shanghai Disneyland, the one I own is likely a knock-off. Acquired from pin trading in Disney Springs.",
-                image: "Pins/roaringmountain.jpg", // Changed image path
-                price: 269,
+                image: "Pins/roaringmountain.jpg",
+                price: 269.00,
                 sku: "400060085601",
             },
             {
                 name: "Yeti Pin",
                 description: "A pin from the 2017 attraction icons set depicting the yeti from Expedition Everest. Likely a knock-off pin and was acquired from pin trading.",
-                image: "Pins/yeti.jpg", // Changed image path
+                image: "Pins/yeti.jpg",
                 price: 12.99,
                 sku: "N/A",
             },
@@ -195,13 +210,16 @@
                 const pinElement = document.createElement('div');
                 pinElement.className = 'gallery-item';
                 pinElement.innerHTML = `
-                    <img src="${pin.image}" alt="${pin.name}">
-                    <div class="gallery-item-info">
-                        <h3 class="text-lg font-semibold">${pin.name}</h3>
-                        <p>${pin.description}</p>
+                    <div class="overflow-hidden relative">
+                        <img src="${pin.image}" alt="${pin.name}">
+                        <span class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-gray-900 font-bold text-xs px-2.5 py-1 rounded-full shadow-sm">$${pin.price.toFixed(2)}</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-base font-semibold text-gray-800 mb-1 truncate">${pin.name}</h3>
+                        <p class="text-gray-500 text-xs line-clamp-2">${pin.description}</p>
                     </div>
                 `;
-                pinElement.addEventListener('click', () => showPinDetails(pin)); // Add click event listener
+                pinElement.addEventListener('click', () => showPinDetails(pin));
                 gallerySection.appendChild(pinElement);
             });
         }
@@ -212,7 +230,7 @@
 
             const prevLink = document.createElement('a');
             prevLink.className = `pagination-link ${currentPage === 1 ? 'disabled' : ''}`;
-            prevLink.textContent = 'Previous';
+            prevLink.innerHTML = '<i class="fa-solid fa-chevron-left text-xs"></i>';
             prevLink.addEventListener('click', () => {
                 if (currentPage > 1) {
                     currentPage--;
@@ -236,7 +254,7 @@
 
             const nextLink = document.createElement('a');
             nextLink.className = `pagination-link ${currentPage === totalPages ? 'disabled' : ''}`;
-            nextLink.textContent = 'Next';
+            nextLink.innerHTML = '<i class="fa-solid fa-chevron-right text-xs"></i>';
             nextLink.addEventListener('click', () => {
                 if (currentPage < totalPages) {
                     currentPage++;
@@ -253,19 +271,20 @@
             pinDetailsImage.alt = pin.name;
             pinDetailsPriceElement.textContent = `$${pin.price.toFixed(2)}`;
             pinDetailsSkuElement.textContent = pin.sku;
-            pinDetailsTableDescriptionElement.textContent = pin.description; // Added Description to table
+            pinDetailsTableDescriptionElement.textContent = pin.description;
             pinDetailsNameTableElement.textContent = pin.name;
+            
             gallerySection.classList.add('hidden');
             paginationNav.classList.add('hidden');
             pinDetailsSection.classList.remove('hidden');
-            pinDetailsTable.classList.remove('hidden'); //show table
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         backToGalleryButton.addEventListener('click', () => {
             pinDetailsSection.classList.add('hidden');
             gallerySection.classList.remove('hidden');
             paginationNav.classList.remove('hidden');
-            pinDetailsTable.classList.add('hidden'); //hide table
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
         displayPins();

@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Universal Grid | Daily Theme Park Trivia</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Cinzel"', 'serif'],
+          },
+          colors: {
+            universal: {
+              950: '#040914',
+              900: '#081226',
+              800: '#0F2042',
+              700: '#183266',
+              gold: '#F5B841',
+              amber: '#D97706',
+              cyan: '#38BDF8',
+            }
+          },
+          boxShadow: {
+            'marquee': '0 0 25px -5px rgba(245, 184, 65, 0.25), inset 0 0 12px rgba(245, 184, 65, 0.1)',
+            'cell-hover': '0 0 20px rgba(56, 189, 248, 0.35)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: radial-gradient(circle at 50% 0%, #10244a 0%, #060d1c 55%, #030711 100%);
+      color: #F8FAFC;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Subtle starry globe aura */
+    .globe-bg {
+      background-image: 
+        radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.4) 1px, transparent 0),
+        radial-gradient(1.5px 1.5px at 82% 12%, rgba(245,184,65,0.45) 1px, transparent 0),
+        radial-gradient(1px 1px at 45% 75%, rgba(56,189,248,0.35) 1px, transparent 0),
+        radial-gradient(1.5px 1.5px at 90% 65%, rgba(255,255,255,0.3) 1px, transparent 0),
+        radial-gradient(1px 1px at 10% 85%, rgba(245,184,65,0.3) 1px, transparent 0);
+      background-size: 400px 400px;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.88); opacity: 0; }
+      70% { transform: scale(1.03); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    .animate-pop {
+      animation: popIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .animate-shake {
+      animation: shake 0.4s ease-in-out;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #081226;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e3a6e;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #F5B841;
+    }
+  </style>
+</head>
+<body class="globe-bg flex flex-col justify-between antialiased selection:bg-universal-gold selection:text-universal-950">
+
+  <!-- Top Navigation Bar -->
+  <header class="border-b border-white/10 bg-universal-950/80 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-universal-gold via-amber-500 to-amber-700 p-[1px] shadow-marquee flex-shrink-0">
+          <div class="w-full h-full bg-universal-950 rounded-xl flex items-center justify-center relative overflow-hidden">
+            <!-- Globe + Ring SVG -->
+            <svg class="w-6 h-6 text-universal-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="8" />
+              <ellipse cx="12" cy="12" rx="11" ry="4" transform="rotate(-24 12 12)" class="text-sky-400" stroke="currentColor" />
+              <path d="M12 4a12 12 0 0 0 0 16M12 4a12 12 0 0 1 0 16" stroke-opacity="0.5" />
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-display font-bold text-lg sm:text-xl tracking-wider text-white">UNIVERSAL <span class="text-universal-gold">GRID</span></h1>
+            <span id="puzzle-badge" class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">
+              Daily #1
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 hidden sm:block">Match attractions across all 9 Universal Parks worldwide</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <button id="btn-stats" title="Statistics" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 transition active:scale-95">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        </button>
+        <button id="btn-help" title="How to Play" class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 transition active:scale-95">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-3xl w-full mx-auto px-3 sm:px-6 py-5 sm:py-7 flex flex-col items-center">
+
+    <!-- Mode & Difficulty Control Bar -->
+    <div class="w-full flex flex-wrap items-center justify-between gap-2 mb-5 bg-universal-900/70 border border-white/10 rounded-2xl p-2 shadow-lg">
+      <!-- Mode Switcher -->
+      <div class="flex items-center bg-universal-950/90 p-1 rounded-xl border border-white/5">
+        <button id="mode-daily" class="px-3 py-1.5 rounded-lg text-xs font-bold transition bg-universal-gold text-universal-950 shadow">
+          Daily Grid
+        </button>
+        <button id="mode-unlimited" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">
+          Unlimited Practice
+        </button>
+      </div>
+
+      <!-- Difficulty & New Grid Button -->
+      <div class="flex items-center gap-2">
+        <div class="flex items-center bg-universal-950/90 p-1 rounded-xl border border-white/5 text-xs">
+          <button id="diff-standard" class="px-2.5 py-1 rounded-lg font-semibold bg-sky-500/20 text-sky-300 border border-sky-400/30 transition">
+            Standard
+          </button>
+          <button id="diff-nerd" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white transition">
+            Park Nerd
+          </button>
+        </div>
+
+        <button id="btn-new-random" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white text-xs font-bold shadow transition active:scale-95">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          New Board
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Status Strip (Guesses Left, Rarity Score, Unlimited Toggle) -->
+    <div class="w-full grid grid-cols-3 gap-2 sm:gap-4 mb-5">
+      <div class="bg-universal-900/80 border border-white/10 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
+        <span class="text-[10px] sm:text-xs uppercase tracking-wider text-slate-400 font-semibold">Guesses Left</span>
+        <div class="flex items-center gap-2 mt-0.5">
+          <span id="guesses-display" class="text-xl sm:text-2xl font-extrabold text-white">9</span>
+          <button id="btn-toggle-inf" title="Toggle Unlimited Guesses" class="text-[10px] px-2 py-0.5 rounded-md bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition">
+            ∞ Off
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-universal-900/80 border border-universal-gold/30 rounded-2xl p-3 flex flex-col items-center justify-center text-center shadow-marquee">
+        <span class="text-[10px] sm:text-xs uppercase tracking-wider text-universal-gold font-semibold">Rarity Score</span>
+        <span id="rarity-display" class="text-xl sm:text-2xl font-extrabold text-white mt-0.5">900</span>
+        <span class="text-[10px] text-slate-400">Lower is rarer</span>
+      </div>
+
+      <div class="bg-universal-900/80 border border-white/10 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
+        <span class="text-[10px] sm:text-xs uppercase tracking-wider text-slate-400 font-semibold">Solved</span>
+        <span id="solved-display" class="text-xl sm:text-2xl font-extrabold text-emerald-400 mt-0.5">0 / 9</span>
+        <button id="btn-give-up" class="text-[10px] text-rose-400 hover:text-rose-300 underline mt-0.5">
+          Finish / Reveal
+        </button>
+      </div>
+    </div>
+
+    <!-- THE 3x3 INTERACTIVE GRID -->
+    <div class="w-full max-w-[540px] select-none">
+      <div class="grid grid-cols-4 gap-2 sm:gap-3">
+        
+        <!-- Top-Left Corner Emblem -->
+        <div class="aspect-square rounded-2xl bg-universal-950/70 border border-universal-gold/25 flex flex-col items-center justify-center p-2 text-center shadow-inner">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-universal-gold/10 border border-universal-gold/30 flex items-center justify-center mb-1">
+            <span class="text-universal-gold font-display font-bold text-sm sm:text-base">U</span>
+          </div>
+          <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-universal-gold/80 leading-tight">
+            Parks<br>Trivia
+          </span>
+        </div>
+
+        <!-- Column Headers (0, 1, 2) -->
+        <div id="col-header-0" class="aspect-square rounded-2xl bg-gradient-to-b from-universal-800 to-universal-900 border border-white/15 p-2 flex flex-col items-center justify-center text-center shadow-md"></div>
+        <div id="col-header-1" class="aspect-square rounded-2xl bg-gradient-to-b from-universal-800 to-universal-900 border border-white/15 p-2 flex flex-col items-center justify-center text-center shadow-md"></div>
+        <div id="col-header-2" class="aspect-square rounded-2xl bg-gradient-to-b from-universal-800 to-universal-900 border border-white/15 p-2 flex flex-col items-center justify-center text-center shadow-md"></div>
+
+        <!-- Row 0 Header + Cells (0,0), (0,1), (0,2) -->
+        <div id="row-header-0" class="aspect-square rounded-2xl bg-gradient-to-r from-universal-800 to-universal-900 border border-white/15 p-2 flex flex-col items-center justify-center text-center shadow-md"></div>
+        <button data-cell="0" class="grid-cell aspect-square rounded-2xl bg-universal-900/90 hover:bg-universal-800/90 border border-white/15 hover:border-sky-400/60 hover:shadow-cell-hover transition-all duration-200 p-1.5 sm:p-2 flex flex-col items-center justify-center text-center relative overflow-hidden group cursor-pointer"></button>
+        <button data-cell="1" class="grid-cell aspect-square rounded-2xl bg-universal-900/90 hover:bg-universal-800/90 border border-white/15 hover:border-sky-400/60 hover:shadow-cell-hover transition-all duration-200 p-1.5 sm:p-2 flex flex-col items-center justify-center text-center relative overflow-hidden group cursor-pointer"></button>
+        <button data-cell="2" class="grid-cell aspect-square rounded-2xl bg-universal-900/90 hover:bg-universal-800/90 border border-white/15 hover:border-sky-400/60 hover:shadow-cell-hover transition-all duration-200 p-1.5 sm:p-2 flex flex-col items-center justify-center text-center relative overflow-hidden group cursor-pointer"></button>
+
+        <!-- Row 1 Header + Cells (1,0), (1,1), (1,2) -->
+        <div id="row-header-1" class="aspect-square rounded-2xl bg-gradient-to-r from-universal-800 to-universal-900 border border-white/15 p-2 flex flex-col items-center justify-center text-center shadow-md"></div>
+        <button data-cell="3" class="grid-cell aspect-square rounded-2xl bg-universal-900/90 hover:bg-universal-800/90 border border-white/15 hover:border-sky-400/60 hover:shadow-cell-hover transition-all duration-200 p-1.5 sm:p-2 flex flex-col items-center justify-center text-center relative overflow-hidden group cursor-pointer"></button>
+        <button data-cell="4" class="grid-cell aspect-square rounded-2xl bg-universal-900/90 hover:bg-universal-800/90 border border-white/15 hover:border-sky-400/60 hover:shadow-cell-hover transition-all duration-200 p-1.5 sm:p-2 flex flex-col items-center justify-center text-center relative overflow-hidden group cursor-pointer"></button>
+        <button data-cell="5" class="grid-cell aspect-square rounded-2xl bg-universal-900/90 hover:bg-universal-800/90 border border-white/15 hover:border-sky-400/60 hover:shadow-cell-hover transition-all duration-200 p-1.5 sm:p-2 flex flex-col items-center justify-center text-center relative overflow-hidden group cursor-pointer"></button>
+
+        <!-- Row 2 Header + Cells (2,0), (2,1), (2,2) -->
+        <div id="row-header-2" class="aspect-square rounded-2xl bg-gradient-to-r from-universal-800 to-universal-900 border border-white/15 p-2 flex flex-col items-center justify-center text-center shadow-md"></div>
+        <button data-cell="6" class="grid-cell aspect-square rounded-2xl bg-universal-900/90 hover:bg-universal-800/90 border border-white/15 hover:border-sky-400/60 hover:shadow-cell-hover transition-all duration-200 p-1.5 sm:p-2 flex flex-col items-center justify-center text-center relative overflow-hidden group cursor-pointer"></button>
+        <button data-cell="7" class="grid-cell aspect-square rounded-2xl bg-universal-900/90 hover:bg-universal-800/90 border border-white/15 hover:border-sky-400/60 hover:shadow-cell-hover transition-all duration-200 p-1.5 sm:p-2 flex flex-col items-center justify-center text-center relative overflow-hidden group cursor-pointer"></button>
+        <button data-cell="8" class="grid-cell aspect-square rounded-2xl bg-universal-900/90 hover:bg-universal-800/90 border border-white/15 hover:border-sky-400/60 hover:shadow-cell-hover transition-all duration-200 p-1.5 sm:p-2 flex flex-col items-center justify-center text-center relative overflow-hidden group cursor-pointer"></button>
+      </div>
+    </div>
+
+    <!-- Bottom Action Banner (Shown when Game Over) -->
+    <div id="game-over-banner" class="hidden w-full max-w-[540px] mt-6 p-4 rounded-2xl bg-gradient-to-r from-universal-800 via-universal-900 to-universal-800 border border-universal-gold/40 shadow-marquee flex flex-col sm:flex-row items-center justify-between gap-3 animate-pop">
+      <div class="text-center sm:text-left">
+        <h3 class="font-display font-bold text-universal-gold text-base">Grid Complete!</h3>
+        <p class="text-xs text-slate-300">Click any cell to inspect valid answers or view your summary.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="btn-open-summary" class="px-4 py-2 rounded-xl bg-universal-gold hover:bg-amber-400 text-universal-950 font-bold text-xs shadow transition active:scale-95">
+          View Summary &amp; Share
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/5 py-4 text-center text-xs text-slate-500 px-4">
+    <p>Universal Grid is a fan-made trivia game celebrating Universal Destinations &amp; Experiences. Not affiliated with NBCUniversal.</p>
+  </footer>
+
+  <!-- ==================== SEARCH / GUESS MODAL ==================== -->
+  <div id="search-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div class="w-full max-w-lg bg-universal-900 border border-universal-gold/30 rounded-3xl shadow-2xl overflow-hidden animate-pop">
+      <!-- Modal Header -->
+      <div class="p-4 sm:p-5 bg-universal-950/90 border-b border-white/10 flex items-center justify-between gap-3">
+        <div>
+          <span class="text-[10px] uppercase tracking-widest text-universal-gold font-bold">Select Matching Attraction</span>
+          <div id="modal-criteria-label" class="text-sm sm:text-base font-bold text-white mt-0.5 flex flex-wrap items-center gap-1.5">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+        <button id="close-search-modal" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Search Input -->
+      <div class="p-4">
+        <div class="relative">
+          <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input id="attraction-search-input" type="text" autocomplete="off" placeholder="Search rides, shows, or coasters (e.g. Flying Dinosaur, VelociCoaster)..." 
+            class="w-full pl-11 pr-4 py-3 rounded-2xl bg-universal-950 border border-white/15 focus:border-universal-gold focus:outline-none text-sm text-white placeholder-slate-500" />
+        </div>
+
+        <!-- Feedback Banner for Wrong Guess -->
+        <div id="wrong-guess-alert" class="hidden mt-3 p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-200 text-xs flex items-center gap-2">
+          <svg class="w-4 h-4 text-rose-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span id="wrong-guess-text">That attraction doesn't match both criteria!</span>
+        </div>
+
+        <!-- Results List -->
+        <div id="search-results-list" class="mt-3 max-h-72 overflow-y-auto space-y-1.5 pr-1">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CELL ANSWERS INSPECTOR MODAL (Post-Game) ==================== -->
+  <div id="inspector-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+    <div class="w-full max-w-md bg-universal-900 border border-white/15 rounded-3xl shadow-2xl overflow-hidden animate-pop">
+      <div class="p-4 bg-universal-950 border-b border-white/10 flex items-center justify-between">
+        <div>
+          <span class="text-[10px] uppercase tracking-widest text-sky-400 font-bold">Valid Answers</span>
+          <h3 id="inspector-title" class="text-sm font-bold text-white mt-0.5">Row × Column</h3>
+        </div>
+        <button id="close-inspector-modal" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div id="inspector-list" class="p-4 max-h-80 overflow-y-auto space-y-2">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== END-OF-GAME SUMMARY & STATS MODAL ==================== -->
+  <div id="summary-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="w-full max-w-md bg-universal-900 border border-universal-gold/40 rounded-3xl shadow-2xl overflow-hidden animate-pop">
+      <div class="p-5 bg-gradient-to-b from-universal-800 to-universal-950 border-b border-white/10 flex items-center justify-between">
+        <div>
+          <span id="summary-subtitle" class="text-[11px] uppercase tracking-widest text-universal-gold font-bold">Daily Grid #1</span>
+          <h2 class="font-display text-xl font-bold text-white mt-0.5">Park Performance</h2>
+        </div>
+        <button id="close-summary-modal" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-5">
+        <!-- Current Game Score Highlights -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-universal-950/90 border border-white/10 rounded-2xl p-3 text-center">
+            <span class="text-xs text-slate-400">Grid Score</span>
+            <div id="summary-score" class="text-2xl font-extrabold text-emerald-400 mt-0.5">0 / 9</div>
+          </div>
+          <div class="bg-universal-950/90 border border-universal-gold/30 rounded-2xl p-3 text-center">
+            <span class="text-xs text-universal-gold">Rarity Score</span>
+            <div id="summary-rarity" class="text-2xl font-extrabold text-white mt-0.5">900</div>
+          </div>
+        </div>
+
+        <!-- Emoji Grid Visual -->
+        <div class="flex flex-col items-center justify-center bg-universal-950/60 border border-white/5 rounded-2xl p-4">
+          <div id="summary-emoji-grid" class="text-2xl leading-snug tracking-widest font-mono select-all">
+            ⬛⬛⬛<br>⬛⬛⬛<br>⬛⬛⬛
+          </div>
+          <p class="text-[11px] text-slate-400 mt-2">Click any cell on the board behind this window to view valid answers!</p>
+        </div>
+
+        <!-- Lifetime Career Stats -->
+        <div>
+          <h4 class="text-xs uppercase tracking-wider text-slate-400 font-bold mb-2">All-Time Park Stats</h4>
+          <div class="grid grid-cols-4 gap-2 text-center">
+            <div class="bg-white/5 rounded-xl p-2">
+              <div id="stat-played" class="text-base font-extrabold text-white">0</div>
+              <div class="text-[10px] text-slate-400">Played</div>
+            </div>
+            <div class="bg-white/5 rounded-xl p-2">
+              <div id="stat-streak" class="text-base font-extrabold text-universal-gold">0</div>
+              <div class="text-[10px] text-slate-400">Streak</div>
+            </div>
+            <div class="bg-white/5 rounded-xl p-2">
+              <div id="stat-perfect" class="text-base font-extrabold text-emerald-400">0</div>
+              <div class="text-[10px] text-slate-400">9/9 Grids</div>
+            </div>
+            <div class="bg-white/5 rounded-xl p-2">
+              <div id="stat-best-rarity" class="text-base font-extrabold text-sky-400">-</div>
+              <div class="text-[10px] text-slate-400">Best Rarity</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Countdown & Share CTA -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-white/10">
+          <div class="text-center sm:text-left">
+            <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Next Daily Grid</span>
+            <span id="countdown-timer" class="font-mono font-bold text-sm text-sky-300">00:00:00</span>
+          </div>
+          <button id="btn-share-results" class="w-full sm:w-auto px-5 py-3 rounded-2xl bg-gradient-to-r from-universal-gold to-amber-500 hover:from-amber-400 hover:to-amber-500 text-universal-950 font-extrabold text-sm shadow-lg flex items-center justify-center gap-2 transition active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+            Share Results
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== HOW TO PLAY MODAL ==================== -->
+  <div id="help-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="w-full max-w-md bg-universal-900 border border-white/15 rounded-3xl shadow-2xl overflow-hidden animate-pop">
+      <div class="p-5 bg-universal-950 border-b border-white/10 flex items-center justify-between">
+        <h2 class="font-display text-lg font-bold text-universal-gold">How to Play Universal Grid</h2>
+        <button id="close-help-modal" class="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="p-5 space-y-3 text-xs sm:text-sm text-slate-300 leading-relaxed">
+        <p><strong class="text-white">1. Fill the 3×3 Grid:</strong> Select a cell and name a Universal Parks ride, show, or attraction from <span class="text-sky-300 font-semibold">any of the 9 Universal parks worldwide</span> that satisfies both the Row and Column criteria.</p>
+        <p><strong class="text-white">2. No Location Spoilers:</strong> Park locations are hidden while searching—you have to know which parks each ride operates in! Multi-park attractions count for any park where they operate.</p>
+        <p><strong class="text-white">3. 9 Guesses:</strong> In standard play, you have 9 guesses total—wrong guesses still consume a guess! Toggle <span class="text-universal-gold font-semibold">∞ Guesses</span> or switch to <span class="text-sky-300 font-semibold">Unlimited Practice</span> anytime.</p>
+        <p><strong class="text-white">4. Rarity Score:</strong> Every valid answer carries a pick percentage. Picking deep-cut attractions lowers your Rarity Score. Unsolved cells add 100 points.</p>
+        <div class="pt-2">
+          <button id="btn-start-playing" class="w-full py-3 rounded-2xl bg-universal-gold text-universal-950 font-extrabold text-sm hover:bg-amber-400 transition">
+            Let's Ride!
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl bg-universal-gold text-universal-950 font-bold text-xs sm:text-sm shadow-2xl opacity-0 pointer-events-none transition-opacity duration-300">
+    Copied results to clipboard!
+  </div>
+
+  <script>
+    /**
+     * ============================================================================
+     * GLOBAL UNIVERSAL PARKS & RESORTS DATABASE (ALL 9 PARKS WORLDWIDE)
+     * Parks:
+     *   USF  = Universal Studios Florida (Orlando)
+     *   IOA  = Islands of Adventure (Orlando)
+     *   EPIC = Universal Epic Universe (Orlando)
+     *   VB   = Volcano Bay (Orlando)
+     *   USH  = Universal Studios Hollywood (California)
+     *   USJ  = Universal Studios Japan (Osaka)
+     *   USS  = Universal Studios Singapore (Sentosa)
+     *   USB  = Universal Studios Beijing (China)
+     *   UKR  = Universal Kids Resort (Frisco, Texas - Opened July 2026)
+     *
+     * Multi-park attractions are unified under a single clean name with a `parks`
+     * array so searching never spoils which park(s) the attraction belongs to!
+     * ============================================================================
+     */
+    const PARK_NAMES = {
+      USF: 'Universal Studios Florida',
+      IOA: 'Islands of Adventure',
+      EPIC: 'Epic Universe',
+      VB: 'Volcano Bay',
+      USH: 'Universal Studios Hollywood',
+      USJ: 'Universal Studios Japan',
+      USS: 'Universal Studios Singapore',
+      USB: 'Universal Studios Beijing',
+      UKR: 'Universal Kids Resort'
+    };
+
+    const ATTRACTIONS = [
+      // --- MULTI-PARK GLOBAL ATTRACTIONS ---
+      { id: 'forbidden-journey', name: 'Harry Potter and the Forbidden Journey', parks: ['IOA', 'USH', 'USJ', 'USB'], opened: 2010, type: ['dark-ride', 'simulator'], indoor: true, water: false, ip: ['wizarding', 'movie'], singleRider: true, heightReq: 48, popularity: 44 },
+      { id: 'flight-of-hippogriff', name: 'Flight of the Hippogriff', parks: ['IOA', 'USH', 'USJ', 'USB'], opened: 2000, type: ['coaster'], indoor: false, water: false, ip: ['wizarding', 'movie'], singleRider: false, heightReq: 36, popularity: 26 },
+      { id: 'transformers-3d', name: 'TRANSFORMERS: The Ride-3D', parks: ['USF', 'USH', 'USS', 'USB'], opened: 2011, type: ['dark-ride', 'simulator'], indoor: true, water: false, ip: ['movie', 'spielberg'], singleRider: true, heightReq: 40, popularity: 31 },
+      { id: 'revenge-of-the-mummy', name: 'Revenge of the Mummy', parks: ['USF', 'USH', 'USS'], opened: 2004, type: ['coaster', 'dark-ride'], indoor: true, water: false, ip: ['movie'], singleRider: true, heightReq: 48, popularity: 34 },
+      { id: 'mario-kart-bowsers-challenge', name: 'Mario Kart: Bowser’s Challenge / Koopa’s Challenge', parks: ['EPIC', 'USH', 'USJ'], opened: 2021, type: ['dark-ride', 'interactive'], indoor: true, water: false, ip: ['nintendo'], singleRider: true, heightReq: 40, popularity: 38 },
+      { id: 'yoshis-adventure', name: 'Yoshi’s Adventure', parks: ['EPIC', 'USJ'], opened: 2021, type: ['dark-ride'], indoor: false, water: false, ip: ['nintendo'], singleRider: false, heightReq: 34, popularity: 21 },
+      { id: 'mine-cart-madness', name: 'Mine-Cart Madness', parks: ['EPIC', 'USJ'], opened: 2024, type: ['coaster'], indoor: false, water: false, ip: ['nintendo'], singleRider: true, heightReq: 40, popularity: 33 },
+      { id: 'minion-mayhem', name: 'Despicable Me Minion Mayhem', parks: ['USF', 'USH', 'USJ', 'USB'], opened: 2012, type: ['simulator'], indoor: true, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 40, popularity: 29 },
+      { id: 'villain-con-minion-blast', name: 'Illumination’s Villain-Con Minion Blast', parks: ['USF', 'USJ', 'USS'], opened: 2023, type: ['interactive'], indoor: true, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 0, popularity: 16 },
+      { id: 'simpsons-ride', name: 'The Simpsons Ride', parks: ['USF', 'USH'], opened: 2008, type: ['simulator'], indoor: true, water: false, ip: ['tv'], singleRider: false, heightReq: 40, popularity: 25 },
+      { id: 'jurassic-park-river-adventure', name: 'Jurassic Park River Adventure / The Ride', parks: ['IOA', 'USJ'], opened: 1996, type: ['water-ride', 'dark-ride'], indoor: false, water: true, ip: ['movie', 'jurassic', 'spielberg'], singleRider: true, heightReq: 42, popularity: 30 },
+      { id: 'waterworld-show', name: 'WaterWorld (Stunt Show)', parks: ['USH', 'USJ', 'USS', 'USB'], opened: 1995, type: ['show', 'water-ride'], indoor: false, water: true, ip: ['movie'], singleRider: false, heightReq: 0, popularity: 24 },
+      { id: 'untrainable-dragon', name: 'The Untrainable Dragon / Untrainable', parks: ['EPIC', 'USB'], opened: 2021, type: ['show'], indoor: true, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 0, popularity: 13 },
+      { id: 'kung-fu-panda-theatre', name: 'DreamWorks Theatre Featuring Kung Fu Panda', parks: ['USH'], opened: 2018, type: ['show', 'simulator'], indoor: true, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 0, popularity: 12 },
+
+      // --- UNIVERSAL STUDIOS FLORIDA (USF) EXCLUSIVES ---
+      { id: 'gringotts', name: 'Harry Potter and the Escape from Gringotts', parks: ['USF'], opened: 2014, type: ['coaster', 'dark-ride', 'simulator'], indoor: true, water: false, ip: ['wizarding', 'movie'], singleRider: true, heightReq: 42, popularity: 42 },
+      { id: 'et-adventure', name: 'E.T. Adventure', parks: ['USF'], opened: 1990, type: ['dark-ride'], indoor: true, water: false, ip: ['movie', 'spielberg'], singleRider: false, heightReq: 34, popularity: 15 },
+      { id: 'men-in-black', name: 'MEN IN BLACK Alien Attack', parks: ['USF'], opened: 2000, type: ['dark-ride', 'interactive'], indoor: true, water: false, ip: ['movie', 'spielberg'], singleRider: true, heightReq: 42, popularity: 20 },
+      { id: 'rip-ride-rockit', name: 'Hollywood Rip Ride Rockit', parks: ['USF'], opened: 2009, type: ['coaster'], indoor: false, water: false, ip: ['original'], singleRider: true, heightReq: 51, popularity: 28 },
+      { id: 'hogwarts-express-kc', name: 'Hogwarts Express (King’s Cross)', parks: ['USF'], opened: 2014, type: ['dark-ride', 'simulator'], indoor: true, water: false, ip: ['wizarding', 'movie'], singleRider: false, heightReq: 0, popularity: 18 },
+      { id: 'fast-furious-supercharged', name: 'Fast & Furious – Supercharged', parks: ['USF'], opened: 2018, type: ['simulator', 'dark-ride'], indoor: true, water: false, ip: ['movie'], singleRider: true, heightReq: 40, popularity: 9 },
+      { id: 'race-through-ny', name: 'Race Through New York Starring Jimmy Fallon', parks: ['USF'], opened: 2017, type: ['simulator'], indoor: true, water: false, ip: ['tv'], singleRider: false, heightReq: 40, popularity: 10 },
+      { id: 'bourne-stuntacular', name: 'The Bourne Stuntacular', parks: ['USF'], opened: 2020, type: ['show'], indoor: true, water: false, ip: ['movie'], singleRider: false, heightReq: 0, popularity: 13 },
+      { id: 'horror-make-up', name: 'Universal Orlando’s Horror Make-Up Show', parks: ['USF'], opened: 1990, type: ['show'], indoor: true, water: false, ip: ['monsters', 'movie'], singleRider: false, heightReq: 0, popularity: 8 },
+      { id: 'trolls-trollercoaster', name: 'Trolls Trollercoaster', parks: ['USF'], opened: 2024, type: ['coaster'], indoor: false, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 36, popularity: 7 },
+      { id: 'kang-kodos', name: 'Kang & Kodos’ Twirl ‘n’ Hurl', parks: ['USF'], opened: 2013, type: ['flat-ride'], indoor: false, water: false, ip: ['tv'], singleRider: false, heightReq: 0, popularity: 6 },
+
+      // --- ISLANDS OF ADVENTURE (IOA) EXCLUSIVES ---
+      { id: 'velocicoaster', name: 'Jurassic World VelociCoaster', parks: ['IOA'], opened: 2021, type: ['coaster'], indoor: false, water: false, ip: ['movie', 'jurassic'], singleRider: true, heightReq: 51, popularity: 48 },
+      { id: 'hagrids', name: 'Hagrid’s Magical Creatures Motorbike Adventure', parks: ['IOA'], opened: 2019, type: ['coaster'], indoor: false, water: false, ip: ['wizarding', 'movie'], singleRider: true, heightReq: 48, popularity: 46 },
+      { id: 'spider-man', name: 'The Amazing Adventures of Spider-Man', parks: ['IOA'], opened: 1999, type: ['dark-ride', 'simulator'], indoor: true, water: false, ip: ['marvel', 'comic'], singleRider: true, heightReq: 40, popularity: 33 },
+      { id: 'incredible-hulk', name: 'The Incredible Hulk Coaster', parks: ['IOA'], opened: 1999, type: ['coaster'], indoor: false, water: false, ip: ['marvel', 'comic'], singleRider: true, heightReq: 54, popularity: 37 },
+      { id: 'dudley-do-right', name: 'Dudley Do-Right’s Ripsaw Falls', parks: ['IOA'], opened: 1999, type: ['water-ride'], indoor: false, water: true, ip: ['tv', 'comic'], singleRider: true, heightReq: 44, popularity: 21 },
+      { id: 'popeye-bilge-rat', name: 'Popeye & Bluto’s Bilge-Rat Barges', parks: ['IOA'], opened: 1999, type: ['water-ride'], indoor: false, water: true, ip: ['comic', 'tv'], singleRider: false, heightReq: 42, popularity: 19 },
+      { id: 'skull-island-kong', name: 'Skull Island: Reign of Kong', parks: ['IOA'], opened: 2016, type: ['dark-ride', 'simulator'], indoor: true, water: false, ip: ['movie'], singleRider: true, heightReq: 36, popularity: 17 },
+      { id: 'cat-in-the-hat', name: 'The Cat in the Hat', parks: ['IOA'], opened: 1999, type: ['dark-ride'], indoor: true, water: false, ip: ['book'], singleRider: false, heightReq: 36, popularity: 15 },
+      { id: 'high-in-the-sky', name: 'The High in the Sky Seuss Trolley Train Ride!', parks: ['IOA'], opened: 2006, type: ['flat-ride'], indoor: false, water: false, ip: ['book'], singleRider: false, heightReq: 36, popularity: 12 },
+      { id: 'doctor-doom', name: 'Doctor Doom’s Fearfall', parks: ['IOA'], opened: 1999, type: ['flat-ride'], indoor: false, water: false, ip: ['marvel', 'comic'], singleRider: true, heightReq: 52, popularity: 14 },
+      { id: 'pteranodon-flyers', name: 'Pteranodon Flyers', parks: ['IOA'], opened: 1999, type: ['coaster'], indoor: false, water: false, ip: ['movie', 'jurassic'], singleRider: false, heightReq: 36, popularity: 9 },
+
+      // --- UNIVERSAL EPIC UNIVERSE (EPIC) EXCLUSIVES ---
+      { id: 'stardust-racers', name: 'Stardust Racers', parks: ['EPIC'], opened: 2025, type: ['coaster'], indoor: false, water: false, ip: ['original'], singleRider: true, heightReq: 48, popularity: 36 },
+      { id: 'monsters-unchained', name: 'Monsters Unchained: The Frankenstein Experiment', parks: ['EPIC'], opened: 2025, type: ['dark-ride', 'simulator'], indoor: true, water: false, ip: ['monsters', 'movie'], singleRider: true, heightReq: 48, popularity: 35 },
+      { id: 'ministry-of-magic', name: 'Harry Potter and the Battle at the Ministry', parks: ['EPIC'], opened: 2025, type: ['dark-ride', 'simulator'], indoor: true, water: false, ip: ['wizarding', 'movie'], singleRider: true, heightReq: 40, popularity: 38 },
+      { id: 'hiccups-wing-gliders', name: 'Hiccup’s Wing Gliders', parks: ['EPIC'], opened: 2025, type: ['coaster'], indoor: false, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 40, popularity: 25 },
+      { id: 'curse-of-werewolf', name: 'Curse of the Werewolf', parks: ['EPIC'], opened: 2025, type: ['coaster'], indoor: false, water: false, ip: ['monsters', 'movie'], singleRider: true, heightReq: 40, popularity: 22 },
+      { id: 'fyre-drill', name: 'Fyre Drill', parks: ['EPIC'], opened: 2025, type: ['water-ride', 'interactive'], indoor: false, water: true, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 0, popularity: 12 },
+      { id: 'dragon-racers-rally', name: 'Dragon Racer’s Rally', parks: ['EPIC'], opened: 2025, type: ['flat-ride'], indoor: false, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 48, popularity: 10 },
+      { id: 'constellation-carousel', name: 'Constellation Carousel', parks: ['EPIC'], opened: 2025, type: ['flat-ride'], indoor: false, water: false, ip: ['original'], singleRider: false, heightReq: 0, popularity: 9 },
+
+      // --- UNIVERSAL STUDIOS HOLLYWOOD (USH) EXCLUSIVES ---
+      { id: 'studio-tour', name: 'World-Famous Studio Tour', parks: ['USH'], opened: 1964, type: ['dark-ride', 'simulator'], indoor: false, water: false, ip: ['movie', 'jurassic', 'spielberg'], singleRider: false, heightReq: 0, popularity: 35 },
+      { id: 'hollywood-drift', name: 'Fast & Furious: Hollywood Drift', parks: ['USH'], opened: 2026, type: ['coaster'], indoor: false, water: false, ip: ['movie'], singleRider: true, heightReq: 48, popularity: 34 },
+      { id: 'jurassic-world-the-ride', name: 'Jurassic World – The Ride', parks: ['USH'], opened: 2019, type: ['water-ride', 'dark-ride'], indoor: false, water: true, ip: ['movie', 'jurassic'], singleRider: true, heightReq: 42, popularity: 28 },
+      { id: 'secret-life-of-pets', name: 'The Secret Life of Pets: Off the Leash', parks: ['USH'], opened: 2021, type: ['dark-ride'], indoor: true, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 34, popularity: 20 },
+
+      // --- VOLCANO BAY (VB) EXCLUSIVES ---
+      { id: 'krakatau', name: 'Krakatau Aqua Coaster', parks: ['VB'], opened: 2017, type: ['coaster', 'water-ride'], indoor: false, water: true, ip: ['original'], singleRider: false, heightReq: 42, popularity: 24 },
+      { id: 'ko-okiri', name: 'Ko’okiri Body Plunge', parks: ['VB'], opened: 2017, type: ['water-ride'], indoor: false, water: true, ip: ['original'], singleRider: false, heightReq: 48, popularity: 18 },
+      { id: 'teawa', name: 'TeAwa The Fearless River', parks: ['VB'], opened: 2017, type: ['water-ride'], indoor: false, water: true, ip: ['original'], singleRider: false, heightReq: 42, popularity: 15 },
+      { id: 'honu-ika-moana', name: 'Honu ika Moana', parks: ['VB'], opened: 2017, type: ['water-ride'], indoor: false, water: true, ip: ['original'], singleRider: false, heightReq: 42, popularity: 11 },
+
+      // --- UNIVERSAL STUDIOS JAPAN (USJ) EXCLUSIVES ---
+      { id: 'flying-dinosaur', name: 'The Flying Dinosaur', parks: ['USJ'], opened: 2016, type: ['coaster'], indoor: false, water: false, ip: ['movie', 'jurassic'], singleRider: true, heightReq: 52, popularity: 36 },
+      { id: 'hollywood-dream', name: 'Hollywood Dream – The Ride', parks: ['USJ'], opened: 2007, type: ['coaster'], indoor: false, water: false, ip: ['original'], singleRider: true, heightReq: 52, popularity: 27 },
+      { id: 'hollywood-dream-backdrop', name: 'Hollywood Dream – The Ride: Backdrop', parks: ['USJ'], opened: 2013, type: ['coaster'], indoor: false, water: false, ip: ['original'], singleRider: false, heightReq: 52, popularity: 22 },
+      { id: 'space-fantasy', name: 'Space Fantasy – The Ride', parks: ['USJ'], opened: 2010, type: ['coaster', 'dark-ride'], indoor: true, water: false, ip: ['original'], singleRider: true, heightReq: 48, popularity: 23 },
+      { id: 'jaws-usj', name: 'JAWS', parks: ['USJ'], opened: 2001, type: ['water-ride'], indoor: false, water: true, ip: ['movie', 'spielberg'], singleRider: true, heightReq: 0, popularity: 29 },
+      { id: 'detective-conan-4d', name: 'Detective Conan 4-D Live Show: Jewel Under the Starry Sky', parks: ['USJ'], opened: 2024, type: ['show', 'simulator'], indoor: true, water: false, ip: ['anime', 'tv'], singleRider: false, heightReq: 0, popularity: 12 },
+      { id: 'elmos-go-go-skateboard', name: 'Elmo’s Go-Go Skateboard', parks: ['USJ'], opened: 2015, type: ['flat-ride'], indoor: false, water: false, ip: ['tv'], singleRider: false, heightReq: 36, popularity: 8 },
+      { id: 'flying-snoopy', name: 'The Flying Snoopy', parks: ['USJ'], opened: 2012, type: ['flat-ride'], indoor: false, water: false, ip: ['comic', 'tv'], singleRider: false, heightReq: 36, popularity: 10 },
+
+      // --- UNIVERSAL STUDIOS SINGAPORE (USS) EXCLUSIVES ---
+      { id: 'battlestar-galactica', name: 'Battlestar Galactica: HUMAN vs. CYLON', parks: ['USS'], opened: 2010, type: ['coaster'], indoor: false, water: false, ip: ['tv'], singleRider: true, heightReq: 49, popularity: 32 },
+      { id: 'jurassic-park-rapids', name: 'Jurassic Park Rapids Adventure', parks: ['USS'], opened: 2010, type: ['water-ride'], indoor: false, water: true, ip: ['movie', 'jurassic', 'spielberg'], singleRider: true, heightReq: 42, popularity: 24 },
+      { id: 'canopy-flyer', name: 'Canopy Flyer', parks: ['USS'], opened: 2010, type: ['coaster'], indoor: false, water: false, ip: ['movie', 'jurassic'], singleRider: true, heightReq: 36, popularity: 14 },
+      { id: 'puss-in-boots', name: 'Puss In Boots’ Giant Journey', parks: ['USS'], opened: 2015, type: ['coaster'], indoor: false, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: true, heightReq: 39, popularity: 19 },
+      { id: 'enchanted-airways', name: 'Enchanted Airways', parks: ['USS'], opened: 2010, type: ['coaster'], indoor: false, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 36, popularity: 15 },
+      { id: 'spaghetti-space-chase', name: 'Sesame Street Spaghetti Space Chase', parks: ['USS'], opened: 2013, type: ['dark-ride'], indoor: true, water: false, ip: ['tv'], singleRider: false, heightReq: 36, popularity: 13 },
+      { id: 'treasure-hunters-uss', name: 'Treasure Hunters', parks: ['USS'], opened: 2010, type: ['flat-ride'], indoor: false, water: false, ip: ['movie'], singleRider: false, heightReq: 0, popularity: 9 },
+
+      // --- UNIVERSAL STUDIOS BEIJING (USB) EXCLUSIVES ---
+      { id: 'decepticoaster', name: 'Decepticoaster', parks: ['USB'], opened: 2021, type: ['coaster'], indoor: false, water: false, ip: ['movie', 'spielberg'], singleRider: true, heightReq: 54, popularity: 28 },
+      { id: 'jurassic-world-adventure', name: 'Jurassic World Adventure', parks: ['USB'], opened: 2021, type: ['dark-ride', 'simulator'], indoor: true, water: false, ip: ['movie', 'jurassic'], singleRider: true, heightReq: 42, popularity: 26 },
+      { id: 'kung-fu-panda-dragon-warrior', name: 'Kung Fu Panda Journey of the Dragon Warrior', parks: ['USB'], opened: 2021, type: ['water-ride', 'dark-ride'], indoor: true, water: true, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 32, popularity: 20 },
+      { id: 'jurassic-flyers-usb', name: 'Jurassic Flyers', parks: ['USB'], opened: 2021, type: ['coaster'], indoor: false, water: false, ip: ['movie', 'jurassic'], singleRider: true, heightReq: 39, popularity: 16 },
+      { id: 'lights-camera-action-usb', name: 'Lights Camera Action! Hosted by Steven Spielberg', parks: ['USB'], opened: 2021, type: ['show'], indoor: true, water: false, ip: ['movie', 'spielberg'], singleRider: false, heightReq: 0, popularity: 14 },
+      { id: 'loop-dee-doop-dee', name: 'Loop-Dee Doop-Dee', parks: ['USB'], opened: 2021, type: ['coaster'], indoor: true, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 36, popularity: 11 },
+
+      // --- UNIVERSAL KIDS RESORT (UKR - FRISCO, TEXAS, OPENED JULY 2026) ---
+      { id: 'cretaceous-coaster', name: 'Jurassic World: Cretaceous Coaster', parks: ['UKR'], opened: 2026, type: ['coaster'], indoor: false, water: false, ip: ['movie', 'jurassic'], singleRider: false, heightReq: 36, popularity: 17 },
+      { id: 'trollsfest-express', name: 'Rhonda’s TrollsFest Express', parks: ['UKR'], opened: 2026, type: ['coaster'], indoor: false, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 36, popularity: 13 },
+      { id: 'happily-ogre-after', name: 'Shrek & Fiona’s Happily Ogre After', parks: ['UKR'], opened: 2026, type: ['dark-ride'], indoor: true, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 0, popularity: 15 },
+      { id: 'mrs-puffs-boating-school', name: 'Mrs. Puff’s Boating School', parks: ['UKR'], opened: 2026, type: ['flat-ride'], indoor: false, water: false, ip: ['tv'], singleRider: false, heightReq: 36, popularity: 14 },
+      { id: 'bello-bay-cruise', name: 'Bello Bay Cruise', parks: ['UKR'], opened: 2026, type: ['water-ride'], indoor: false, water: true, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 0, popularity: 10 },
+      { id: 'pteranodrop', name: 'Pteranodrop', parks: ['UKR'], opened: 2026, type: ['flat-ride'], indoor: false, water: false, ip: ['movie', 'jurassic'], singleRider: false, heightReq: 36, popularity: 11 }
+    ];
+
+    /**
+     * ============================================================================
+     * CATEGORY DEFINITIONS (Global Parks, Regions, Ride Types, IPs, Specs)
+     * ============================================================================
+     */
+    const CATEGORIES = [
+      // Individual Parks Worldwide
+      { id: 'park-usf', label: 'Universal Studios Florida', short: 'USF', group: 'park', difficulty: 'standard', icon: '🎬', test: a => a.parks.includes('USF') },
+      { id: 'park-ioa', label: 'Islands of Adventure', short: 'IOA', group: 'park', difficulty: 'standard', icon: '🏝️', test: a => a.parks.includes('IOA') },
+      { id: 'park-epic', label: 'Epic Universe', short: 'EPIC', group: 'park', difficulty: 'standard', icon: '🌌', test: a => a.parks.includes('EPIC') },
+      { id: 'park-ush', label: 'Universal Studios Hollywood', short: 'USH', group: 'park', difficulty: 'standard', icon: '🎥', test: a => a.parks.includes('USH') },
+      { id: 'park-usj', label: 'Universal Studios Japan', short: 'USJ', group: 'park', difficulty: 'standard', icon: '🗾', test: a => a.parks.includes('USJ') },
+      { id: 'park-uss', label: 'Universal Studios Singapore', short: 'USS', group: 'park', difficulty: 'standard', icon: '🦁', test: a => a.parks.includes('USS') },
+      { id: 'park-usb', label: 'Universal Studios Beijing', short: 'USB', group: 'park', difficulty: 'standard', icon: '🏯', test: a => a.parks.includes('USB') },
+      { id: 'park-ukr', label: 'Universal Kids Resort (TX)', short: 'UKR', group: 'park', difficulty: 'nerd', icon: '🤠', test: a => a.parks.includes('UKR') },
+      { id: 'park-vb', label: 'Volcano Bay', short: 'VB', group: 'park', difficulty: 'nerd', icon: '🌋', test: a => a.parks.includes('VB') },
+
+      // Regional & Multi-Park Categories
+      { id: 'region-orlando', label: 'Universal Orlando Resort', short: 'Orlando', group: 'park', difficulty: 'standard', icon: '☀️', test: a => a.parks.some(p => ['USF', 'IOA', 'EPIC', 'VB'].includes(p)) },
+      { id: 'region-asia', label: 'Asia-Pacific Park (USJ / USS / USB)', short: 'Asia-Pac', group: 'park', difficulty: 'standard', icon: '🌏', test: a => a.parks.some(p => ['USJ', 'USS', 'USB'].includes(p)) },
+      { id: 'multi-park-clone', label: 'Operates in 2+ Universal Parks', short: 'Multi-Park', group: 'spec', difficulty: 'nerd', icon: '🌐', test: a => a.parks.length >= 2 },
+
+      // Ride Types
+      { id: 'type-coaster', label: 'Roller Coaster', short: 'Coaster', group: 'type', difficulty: 'standard', icon: '🎢', test: a => a.type.includes('coaster') },
+      { id: 'type-dark', label: 'Dark Ride / Simulator', short: 'Dark/Sim', group: 'type', difficulty: 'standard', icon: '🕶️', test: a => a.type.includes('dark-ride') || a.type.includes('simulator') },
+      { id: 'type-water', label: 'Water Attraction', short: 'Water', group: 'type', difficulty: 'standard', icon: '💦', test: a => a.water === true || a.type.includes('water-ride') },
+      { id: 'type-show-flat', label: 'Show, Interactive or Flat Ride', short: 'Show/Flat', group: 'type', difficulty: 'nerd', icon: '🎭', test: a => a.type.includes('show') || a.type.includes('flat-ride') || a.type.includes('interactive') },
+
+      // Franchises / IP
+      { id: 'ip-wizarding', label: 'Wizarding World', short: 'Potter', group: 'ip', difficulty: 'standard', icon: '⚡', test: a => a.ip.includes('wizarding') },
+      { id: 'ip-jurassic', label: 'Jurassic Park / Jurassic World', short: 'Jurassic', group: 'ip', difficulty: 'standard', icon: '🦖', test: a => a.ip.includes('jurassic') },
+      { id: 'ip-dw-illumination', label: 'DreamWorks or Illumination', short: 'DW/Illum', group: 'ip', difficulty: 'standard', icon: '🐉', test: a => a.ip.includes('dreamworks-illumination') },
+      { id: 'ip-movie', label: 'Based on a Movie', short: 'Movie IP', group: 'ip', difficulty: 'standard', icon: '🍿', test: a => a.ip.includes('movie') },
+      { id: 'ip-original-nonmovie', label: 'Original, TV, Book or Gaming IP', short: 'Non-Film', group: 'ip', difficulty: 'nerd', icon: '🎮', test: a => !a.ip.includes('movie') },
+      { id: 'ip-spielberg', label: 'Steven Spielberg Connection', short: 'Spielberg', group: 'ip', difficulty: 'nerd', icon: '🎥', test: a => a.ip.includes('spielberg') },
+
+      // Era & Specs
+      { id: 'era-classic', label: 'Opened Before 2011', short: '< 2011', group: 'era', difficulty: 'standard', icon: '🏛️', test: a => a.opened < 2011 },
+      { id: 'era-modern', label: 'Opened 2019 or Later', short: '2019+', group: 'era', difficulty: 'standard', icon: '✨', test: a => a.opened >= 2019 },
+      { id: 'spec-indoor', label: 'Indoor Attraction', short: 'Indoor', group: 'spec', difficulty: 'standard', icon: '🏢', test: a => a.indoor === true },
+      { id: 'spec-outdoor', label: 'Outdoor Attraction', short: 'Outdoor', group: 'spec', difficulty: 'standard', icon: '🌤️', test: a => a.indoor === false },
+      { id: 'spec-singlerider', label: 'Has Single Rider Line', short: 'Single Rider', group: 'spec', difficulty: 'nerd', icon: '👤', test: a => a.singleRider === true },
+      { id: 'spec-height48', label: '48"+ Height Requirement', short: '48"+ Tall', group: 'spec', difficulty: 'nerd', icon: '📏', test: a => a.heightReq >= 48 }
+    ];
+
+    /**
+     * ============================================================================
+     * SEEDED RANDOM & VALIDATED BOARD GENERATOR
+     * ============================================================================
+     */
+    function mulberry32(seed) {
+      return function () {
+        let t = (seed += 0x6d2b79f5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function getDailyPuzzleNumber() {
+      const epoch = new Date('2026-01-01T00:00:00');
+      const now = new Date();
+      const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const diffDays = Math.floor((todayMidnight - epoch) / (1000 * 60 * 60 * 24));
+      return Math.max(1, diffDays + 1);
+    }
+
+    /**
+     * Generates a guaranteed solvable 3x3 board where every intersection
+     * has at least 2 valid attractions and a complete 9-cell unique assignment exists.
+     */
+    function generateValidBoard(seed, difficulty = 'standard') {
+      const rng = mulberry32(seed);
+      const minAnswers = 2;
+
+      const availableCats = difficulty === 'standard'
+        ? CATEGORIES.filter(c => c.difficulty === 'standard')
+        : CATEGORIES;
+
+      const parkCats = availableCats.filter(c => c.group === 'park');
+      const featureCats = availableCats.filter(c => c.group !== 'park');
+
+      for (let attempt = 0; attempt < 600; attempt++) {
+        // Pick 3 distinct row categories from global parks/regions (avoid overlapping Orlando + USF/IOA/EPIC/VB on same rows)
+        const shuffledParks = [...parkCats].sort(() => rng() - 0.5);
+        const rows = [];
+        for (const pCat of shuffledParks) {
+          if (rows.length >= 3) break;
+          const isOrlandoSub = ['park-usf', 'park-ioa', 'park-epic', 'park-vb'].includes(pCat.id);
+          const isAsiaSub = ['park-usj', 'park-uss', 'park-usb'].includes(pCat.id);
+          if (pCat.id === 'region-orlando' && rows.some(r => ['park-usf', 'park-ioa', 'park-epic', 'park-vb'].includes(r.id))) continue;
+          if (isOrlandoSub && rows.some(r => r.id === 'region-orlando')) continue;
+          if (pCat.id === 'region-asia' && rows.some(r => ['park-usj', 'park-uss', 'park-usb'].includes(r.id))) continue;
+          if (isAsiaSub && rows.some(r => r.id === 'region-asia')) continue;
+          rows.push(pCat);
+        }
+        if (rows.length < 3) continue;
+
+        // Pick 3 distinct column categories from non-park features (avoid duplicate groups if possible)
+        const shuffledFeatures = [...featureCats].sort(() => rng() - 0.5);
+        const cols = [];
+        const usedGroups = new Set();
+
+        for (const cat of shuffledFeatures) {
+          if (cols.length < 3 && !usedGroups.has(cat.group)) {
+            cols.push(cat);
+            usedGroups.add(cat.group);
+          }
+        }
+        if (cols.length < 3) {
+          for (const cat of shuffledFeatures) {
+            if (cols.length < 3 && !cols.includes(cat)) cols.push(cat);
+          }
+        }
+
+        // Verify all 9 intersections have at least `minAnswers` valid answers
+        let valid = true;
+        const cellCandidates = [];
+        for (let r = 0; r < 3; r++) {
+          for (let c = 0; c < 3; c++) {
+            const matches = ATTRACTIONS.filter(a => rows[r].test(a) && cols[c].test(a));
+            if (matches.length < minAnswers) {
+              valid = false;
+              break;
+            }
+            cellCandidates.push(matches);
+          }
+          if (!valid) break;
+        }
+
+        // Verify a 9-distinct-attraction assignment exists via backtracking
+        if (valid && hasDistinctAssignment(cellCandidates)) {
+          return { rows, cols };
+        }
+      }
+
+      // Fallback guaranteed global board
+      return {
+        rows: [
+          CATEGORIES.find(c => c.id === 'park-usj'),
+          CATEGORIES.find(c => c.id === 'park-uss'),
+          CATEGORIES.find(c => c.id === 'park-usb'),
+        ],
+        cols: [
+          CATEGORIES.find(c => c.id === 'type-coaster'),
+          CATEGORIES.find(c => c.id === 'type-dark'),
+          CATEGORIES.find(c => c.id === 'ip-jurassic'),
+        ]
+      };
+    }
+
+    function hasDistinctAssignment(cellCandidates) {
+      const order = [0, 1, 2, 3, 4, 5, 6, 7, 8].sort(
+        (a, b) => cellCandidates[a].length - cellCandidates[b].length
+      );
+      const used = new Set();
+
+      function backtrack(step) {
+        if (step === 9) return true;
+        const cellIdx = order[step];
+        for (const attr of cellCandidates[cellIdx]) {
+          if (!used.has(attr.id)) {
+            used.add(attr.id);
+            if (backtrack(step + 1)) return true;
+            used.delete(attr.id);
+          }
+        }
+        return false;
+      }
+
+      return backtrack(0);
+    }
+
+    /**
+     * ============================================================================
+     * APPLICATION STATE & PERSISTENCE
+     * ============================================================================
+     */
+    const STORAGE_KEY = 'universal_grid_global_v2';
+
+    let state = {
+      mode: 'daily', // 'daily' | 'unlimited'
+      difficulty: 'standard', // 'standard' | 'nerd'
+      dailyNumber: getDailyPuzzleNumber(),
+      randomSeed: Date.now(),
+      board: { rows: [], cols: [] },
+      cells: Array(9).fill(null), // Each entry: null OR { attraction, rarity }
+      guessesLeft: 9,
+      unlimitedGuesses: false,
+      gameOver: false,
+      activeCellIndex: null,
+      stats: {
+        played: 0,
+        streak: 0,
+        lastDailyCompleted: null,
+        perfectGrids: 0,
+        bestRarity: null
+      }
+    };
+
+    function loadPersistedData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const saved = JSON.parse(raw);
+        if (saved.stats) state.stats = { ...state.stats, ...saved.stats };
+        if (saved.difficulty) state.difficulty = saved.difficulty;
+
+        // Restore today's daily grid if saved
+        if (saved.dailySave && saved.dailySave.dailyNumber === state.dailyNumber) {
+          state.cells = saved.dailySave.cells;
+          state.guessesLeft = saved.dailySave.guessesLeft;
+          state.unlimitedGuesses = saved.dailySave.unlimitedGuesses || false;
+          state.gameOver = saved.dailySave.gameOver;
+          state.difficulty = saved.dailySave.difficulty || state.difficulty;
+        }
+      } catch (e) {
+        console.warn('Could not load saved state', e);
+      }
+    }
+
+    function savePersistedData() {
+      try {
+        const payload = {
+          stats: state.stats,
+          difficulty: state.difficulty,
+          dailySave: state.mode === 'daily' ? {
+            dailyNumber: state.dailyNumber,
+            difficulty: state.difficulty,
+            cells: state.cells,
+            guessesLeft: state.guessesLeft,
+            unlimitedGuesses: state.unlimitedGuesses,
+            gameOver: state.gameOver
+          } : JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}').dailySave
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (e) {
+        console.warn('Could not save state', e);
+      }
+    }
+
+    /**
+     * ============================================================================
+     * GAME INITIALIZATION & RENDERING
+     * ============================================================================
+     */
+    function initBoard() {
+      const seed = state.mode === 'daily'
+        ? state.dailyNumber * 7919 + (state.difficulty === 'nerd' ? 101 : 0)
+        : state.randomSeed;
+
+      state.board = generateValidBoard(seed, state.difficulty);
+      renderAll();
+    }
+
+    function startNewUnlimitedBoard() {
+      state.mode = 'unlimited';
+      state.randomSeed = Math.floor(Math.random() * 10000000);
+      state.cells = Array(9).fill(null);
+      state.guessesLeft = 9;
+      state.gameOver = false;
+      initBoard();
+    }
+
+    function switchMode(newMode) {
+      if (state.mode === newMode) return;
+      state.mode = newMode;
+
+      if (newMode === 'daily') {
+        state.cells = Array(9).fill(null);
+        state.guessesLeft = 9;
+        state.gameOver = false;
+        loadPersistedData();
+      } else {
+        state.randomSeed = Math.floor(Math.random() * 10000000);
+        state.cells = Array(9).fill(null);
+        state.guessesLeft = 9;
+        state.gameOver = false;
+      }
+      initBoard();
+    }
+
+    function calculateRarityScore() {
+      let total = 0;
+      for (let i = 0; i < 9; i++) {
+        if (state.cells[i]) {
+          total += state.cells[i].rarity;
+        } else {
+          total += 100;
+        }
+      }
+      return Math.round(total);
+    }
+
+    function getSolvedCount() {
+      return state.cells.filter(Boolean).length;
+    }
+
+    function renderAll() {
+      // Header badge
+      const badge = document.getElementById('puzzle-badge');
+      badge.textContent = state.mode === 'daily' ? `Daily #${state.dailyNumber}` : 'Practice Mode';
+
+      // Mode buttons
+      const btnDaily = document.getElementById('mode-daily');
+      const btnUnlim = document.getElementById('mode-unlimited');
+      const btnNewRandom = document.getElementById('btn-new-random');
+
+      if (state.mode === 'daily') {
+        btnDaily.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition bg-universal-gold text-universal-950 shadow';
+        btnUnlim.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition';
+        btnNewRandom.classList.add('hidden');
+        btnNewRandom.classList.remove('flex');
+      } else {
+        btnUnlim.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition bg-universal-gold text-universal-950 shadow';
+        btnDaily.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition';
+        btnNewRandom.classList.remove('hidden');
+        btnNewRandom.classList.add('flex');
+      }
+
+      // Difficulty buttons
+      const btnStd = document.getElementById('diff-standard');
+      const btnNerd = document.getElementById('diff-nerd');
+      if (state.difficulty === 'standard') {
+        btnStd.className = 'px-2.5 py-1 rounded-lg font-semibold bg-sky-500/20 text-sky-300 border border-sky-400/30 transition';
+        btnNerd.className = 'px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white transition';
+      } else {
+        btnNerd.className = 'px-2.5 py-1 rounded-lg font-semibold bg-amber-500/20 text-universal-gold border border-universal-gold/40 transition';
+        btnStd.className = 'px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white transition';
+      }
+
+      // Stats Strip
+      const guessesDisp = document.getElementById('guesses-display');
+      const btnInf = document.getElementById('btn-toggle-inf');
+      guessesDisp.textContent = state.unlimitedGuesses ? '∞' : state.guessesLeft;
+      btnInf.textContent = state.unlimitedGuesses ? '∞ On' : '∞ Off';
+      btnInf.className = state.unlimitedGuesses
+        ? 'text-[10px] px-2 py-0.5 rounded-md bg-sky-500/20 text-sky-300 border border-sky-400/40 transition'
+        : 'text-[10px] px-2 py-0.5 rounded-md bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition';
+
+      document.getElementById('rarity-display').textContent = calculateRarityScore();
+      document.getElementById('solved-display').textContent = `${getSolvedCount()} / 9`;
+
+      // Render Row & Column Headers
+      state.board.cols.forEach((cat, idx) => {
+        const el = document.getElementById(`col-header-${idx}`);
+        el.innerHTML = `
+          <span class="text-lg sm:text-2xl mb-1">${cat.icon}</span>
+          <span class="text-[11px] sm:text-xs font-bold text-white leading-tight line-clamp-3">${cat.label}</span>
+        `;
+      });
+
+      state.board.rows.forEach((cat, idx) => {
+        const el = document.getElementById(`row-header-${idx}`);
+        el.innerHTML = `
+          <span class="text-lg sm:text-2xl mb-1">${cat.icon}</span>
+          <span class="text-[11px] sm:text-xs font-bold text-white leading-tight line-clamp-3">${cat.label}</span>
+        `;
+      });
+
+      // Render 9 Grid Cells
+      const cellButtons = document.querySelectorAll('.grid-cell');
+      cellButtons.forEach((btn, idx) => {
+        const entry = state.cells[idx];
+        if (entry) {
+          const { attraction, rarity } = entry;
+          const isUltraRare = rarity <= 12;
+          const badgeColor = isUltraRare
+            ? 'bg-universal-gold text-universal-950'
+            : 'bg-emerald-500 text-universal-950';
+          const parksLabel = attraction.parks.join(' • ');
+
+          btn.className = `grid-cell aspect-square rounded-2xl ${isUltraRare ? 'bg-gradient-to-br from-amber-900/60 to-universal-900 border-universal-gold/70' : 'bg-gradient-to-br from-emerald-900/55 to-universal-900 border-emerald-400/60'} border p-1.5 sm:p-2 flex flex-col items-center justify-between text-center relative overflow-hidden animate-pop cursor-pointer`;
+          btn.innerHTML = `
+            <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${badgeColor}">
+              ${rarity}%
+            </span>
+            <span class="text-[10px] sm:text-xs font-extrabold text-white leading-tight line-clamp-3 my-auto">
+              ${attraction.name}
+            </span>
+            <span class="text-[9px] text-slate-300 font-semibold truncate max-w-full">${parksLabel}</span>
+          `;
+        } else if (state.gameOver) {
+          btn.className = 'grid-cell aspect-square rounded-2xl bg-rose-950/30 border border-rose-500/30 hover:border-sky-400/60 p-2 flex flex-col items-center justify-center text-center relative overflow-hidden cursor-pointer transition';
+          btn.innerHTML = `
+            <span class="text-xs font-bold text-rose-400">Missed</span>
+            <span class="text-[10px] text-sky-300 underline mt-1">View Answers</span>
+          `;
+        } else {
+          btn.className = 'grid-cell aspect-square rounded-2xl bg-universal-900/90 hover:bg-universal-800/90 border border-white/15 hover:border-sky-400/60 hover:shadow-cell-hover transition-all duration-200 p-1.5 sm:p-2 flex flex-col items-center justify-center text-center relative overflow-hidden group cursor-pointer';
+          btn.innerHTML = `
+            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/5 group-hover:bg-sky-500/20 flex items-center justify-center text-slate-500 group-hover:text-sky-300 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+            </div>
+          `;
+        }
+      });
+
+      // Game over banner
+      const banner = document.getElementById('game-over-banner');
+      if (state.gameOver) {
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    /**
+     * ============================================================================
+     * CELL INTERACTION, SEARCH & GUESS SUBMISSION
+     * ============================================================================
+     */
+    function handleCellClick(cellIdx) {
+      if (state.gameOver) {
+        openInspectorModal(cellIdx);
+        return;
+      }
+      if (state.cells[cellIdx]) {
+        // Already solved cell: show quick info toast
+        const item = state.cells[cellIdx];
+        showToast(`${item.attraction.name} (${item.rarity}% pick rate)`);
+        return;
+      }
+
+      state.activeCellIndex = cellIdx;
+      const r = Math.floor(cellIdx / 3);
+      const c = cellIdx % 3;
+      const rowCat = state.board.rows[r];
+      const colCat = state.board.cols[c];
+
+      document.getElementById('modal-criteria-label').innerHTML = `
+        <span class="px-2 py-0.5 rounded-lg bg-universal-800 border border-white/10 text-xs">${rowCat.icon} ${rowCat.label}</span>
+        <span class="text-universal-gold">×</span>
+        <span class="px-2 py-0.5 rounded-lg bg-universal-800 border border-white/10 text-xs">${colCat.icon} ${colCat.label}</span>
+      `;
+
+      document.getElementById('wrong-guess-alert').classList.add('hidden');
+      const input = document.getElementById('attraction-search-input');
+      input.value = '';
+      renderSearchResults('');
+
+      const modal = document.getElementById('search-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      setTimeout(() => input.focus(), 50);
+    }
+
+    function renderSearchResults(query) {
+      const list = document.getElementById('search-results-list');
+      const usedIds = new Set(state.cells.filter(Boolean).map(c => c.attraction.id));
+      const q = query.trim().toLowerCase();
+
+      // Search strictly by attraction name so park/location hints are NEVER leaked
+      const filtered = ATTRACTIONS.filter(a => {
+        if (!q) return true;
+        return a.name.toLowerCase().includes(q);
+      }).slice(0, 30);
+
+      if (filtered.length === 0) {
+        list.innerHTML = `<div class="text-center py-6 text-xs text-slate-500">No Universal attractions found matching "${query}"</div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map(a => {
+        const isUsed = usedIds.has(a.id);
+        return `
+          <button type="button" data-attr-id="${a.id}" ${isUsed ? 'disabled' : ''} 
+            class="w-full text-left p-3.5 rounded-xl border transition flex items-center justify-between gap-3 ${
+              isUsed
+                ? 'bg-white/5 border-white/5 opacity-45 cursor-not-allowed'
+                : 'bg-universal-950/80 hover:bg-universal-800 border-white/10 hover:border-universal-gold/50 cursor-pointer'
+            }">
+            <div class="font-bold text-xs sm:text-sm text-white">${a.name}</div>
+            <span class="text-[11px] font-bold px-2.5 py-1 rounded-lg flex-shrink-0 ${isUsed ? 'bg-slate-800 text-slate-400' : 'bg-universal-gold/15 text-universal-gold border border-universal-gold/30'}">
+              ${isUsed ? 'Used' : 'Select'}
+            </span>
+          </button>
+        `;
+      }).join('');
+
+      list.querySelectorAll('button[data-attr-id]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          submitGuess(btn.getAttribute('data-attr-id'));
+        });
+      });
+    }
+
+    function submitGuess(attractionId) {
+      const idx = state.activeCellIndex;
+      if (idx === null || state.gameOver) return;
+
+      const attraction = ATTRACTIONS.find(a => a.id === attractionId);
+      if (!attraction) return;
+
+      const r = Math.floor(idx / 3);
+      const c = idx % 3;
+      const rowCat = state.board.rows[r];
+      const colCat = state.board.cols[c];
+
+      const isMatch = rowCat.test(attraction) && colCat.test(attraction);
+
+      // Consume a guess if not in unlimited-guesses toggle
+      if (!state.unlimitedGuesses) {
+        state.guessesLeft = Math.max(0, state.guessesLeft - 1);
+      }
+
+      if (isMatch) {
+        // Compute deterministic slight jitter around attraction's popularity
+        const jitter = ((attraction.name.length + idx) % 5) - 2;
+        const rarity = Math.max(1, Math.min(85, attraction.popularity + jitter));
+
+        state.cells[idx] = { attraction, rarity };
+        closeModal('search-modal');
+
+        // Check win or out of guesses
+        if (getSolvedCount() === 9 || (!state.unlimitedGuesses && state.guessesLeft === 0)) {
+          finishGame();
+        } else {
+          savePersistedData();
+          renderAll();
+        }
+      } else {
+        // Wrong guess feedback (does not spoil which park it is at)
+        const alertBox = document.getElementById('wrong-guess-alert');
+        const alertText = document.getElementById('wrong-guess-text');
+        const rowPass = rowCat.test(attraction);
+        const colPass = colCat.test(attraction);
+
+        let reason = `${attraction.name} doesn't match `;
+        if (!rowPass && !colPass) reason += `either "${rowCat.label}" or "${colCat.label}".`;
+        else if (!rowPass) reason += `"${rowCat.label}".`;
+        else reason += `"${colCat.label}".`;
+
+        alertText.textContent = reason;
+        alertBox.classList.remove('hidden');
+        alertBox.classList.remove('animate-shake');
+        void alertBox.offsetWidth;
+        alertBox.classList.add('animate-shake');
+
+        if (!state.unlimitedGuesses && state.guessesLeft === 0) {
+          setTimeout(() => {
+            closeModal('search-modal');
+            finishGame();
+          }, 900);
+        } else {
+          savePersistedData();
+          renderAll();
+        }
+      }
+    }
+
+    function finishGame() {
+      if (state.gameOver) {
+        openSummaryModal();
+        return;
+      }
+      state.gameOver = true;
+      const solved = getSolvedCount();
+      const rarity = calculateRarityScore();
+
+      // Record career stats
+      state.stats.played += 1;
+      if (solved === 9) state.stats.perfectGrids += 1;
+      if (state.stats.bestRarity === null || rarity < state.stats.bestRarity) {
+        state.stats.bestRarity = rarity;
+      }
+
+      if (state.mode === 'daily') {
+        if (state.stats.lastDailyCompleted === state.dailyNumber - 1) {
+          state.stats.streak += 1;
+        } else if (state.stats.lastDailyCompleted !== state.dailyNumber) {
+          state.stats.streak = 1;
+        }
+        state.stats.lastDailyCompleted = state.dailyNumber;
+      }
+
+      savePersistedData();
+      renderAll();
+      openSummaryModal();
+    }
+
+    /**
+     * ============================================================================
+     * MODALS, INSPECTOR, SHARING & COUNTDOWN
+     * ============================================================================
+     */
+    function openInspectorModal(cellIdx) {
+      const r = Math.floor(cellIdx / 3);
+      const c = cellIdx % 3;
+      const rowCat = state.board.rows[r];
+      const colCat = state.board.cols[c];
+
+      document.getElementById('inspector-title').textContent = `${rowCat.label} × ${colCat.label}`;
+
+      const matches = ATTRACTIONS
+        .filter(a => rowCat.test(a) && colCat.test(a))
+        .sort((a, b) => a.popularity - b.popularity);
+
+      const list = document.getElementById('inspector-list');
+      list.innerHTML = matches.map(a => {
+        const parkFullList = a.parks.map(code => PARK_NAMES[code] || code).join(' • ');
+        return `
+          <div class="p-3 rounded-xl bg-universal-950/90 border border-white/10 flex items-center justify-between gap-2">
+            <div>
+              <div class="font-bold text-xs sm:text-sm text-white">${a.name}</div>
+              <div class="text-[11px] text-slate-400">${parkFullList} • Opened ${a.opened}</div>
+            </div>
+            <span class="text-xs font-extrabold px-2.5 py-1 rounded-lg bg-universal-gold/15 text-universal-gold flex-shrink-0">
+              ~${a.popularity}%
+            </span>
+          </div>
+        `;
+      }).join('');
+
+      const modal = document.getElementById('inspector-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function openSummaryModal() {
+      const solved = getSolvedCount();
+      const rarity = calculateRarityScore();
+
+      document.getElementById('summary-subtitle').textContent =
+        state.mode === 'daily' ? `Universal Grid • Daily #${state.dailyNumber}` : 'Universal Grid • Practice Mode';
+      document.getElementById('summary-score').textContent = `${solved} / 9`;
+      document.getElementById('summary-rarity').textContent = rarity;
+
+      // Build emoji grid (🟨 for ultra-rare <=12%, 🟩 for solved, ⬛ for missed)
+      let emojiLines = [];
+      for (let r = 0; r < 3; r++) {
+        let line = '';
+        for (let c = 0; c < 3; c++) {
+          const cell = state.cells[r * 3 + c];
+          if (!cell) line += '⬛';
+          else if (cell.rarity <= 12) line += '🟨';
+          else line += '🟩';
+        }
+        emojiLines.push(line);
+      }
+      document.getElementById('summary-emoji-grid').innerHTML = emojiLines.join('<br>');
+
+      // Career Stats
+      document.getElementById('stat-played').textContent = state.stats.played;
+      document.getElementById('stat-streak').textContent = state.stats.streak;
+      document.getElementById('stat-perfect').textContent = state.stats.perfectGrids;
+      document.getElementById('stat-best-rarity').textContent = state.stats.bestRarity !== null ? state.stats.bestRarity : '-';
+
+      const modal = document.getElementById('summary-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function shareResults() {
+      const solved = getSolvedCount();
+      const rarity = calculateRarityScore();
+      const title = state.mode === 'daily' ? `Universal Grid #${state.dailyNumber}` : 'Universal Grid (Practice)';
+
+      let rowsText = [];
+      for (let r = 0; r < 3; r++) {
+        let rowStr = '';
+        for (let c = 0; c < 3; c++) {
+          const cell = state.cells[r * 3 + c];
+          if (!cell) rowStr += '⬛';
+          else if (cell.rarity <= 12) rowStr += '🟨';
+          else rowStr += '🟩';
+        }
+        rowsText.push(rowStr);
+      }
+
+      const shareString = `${title}\nScore: ${solved}/9 | Rarity: ${rarity}\n\n${rowsText.join('\n')}`;
+
+      // Safe clipboard copy via textarea + execCommand
+      const textarea = document.createElement('textarea');
+      textarea.value = shareString;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast('Results copied to clipboard!');
+      } catch (err) {
+        showToast('Unable to copy results.');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      el.classList.add('hidden');
+      el.classList.remove('flex');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.remove('opacity-0');
+      toast.classList.add('opacity-100');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+      }, 2400);
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      const diff = tomorrow - now;
+
+      const hrs = String(Math.floor((diff / (1000 * 60 * 60)) % 24)).padStart(2, '0');
+      const mins = String(Math.floor((diff / 1000 / 60) % 60)).padStart(2, '0');
+      const secs = String(Math.floor((diff / 1000) % 60)).padStart(2, '0');
+
+      const el = document.getElementById('countdown-timer');
+      if (el) el.textContent = `${hrs}:${mins}:${secs}`;
+    }
+
+    /**
+     * ============================================================================
+     * EVENT LISTENERS & BOOTSTRAP
+     * ============================================================================
+     */
+    window.addEventListener('DOMContentLoaded', () => {
+      loadPersistedData();
+      initBoard();
+
+      // Grid cell clicks
+      document.querySelectorAll('.grid-cell').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = Number(btn.getAttribute('data-cell'));
+          handleCellClick(idx);
+        });
+      });
+
+      // Search input live filter
+      document.getElementById('attraction-search-input').addEventListener('input', e => {
+        renderSearchResults(e.target.value);
+      });
+
+      // Mode & Difficulty controls
+      document.getElementById('mode-daily').addEventListener('click', () => switchMode('daily'));
+      document.getElementById('mode-unlimited').addEventListener('click', () => switchMode('unlimited'));
+      document.getElementById('btn-new-random').addEventListener('click', startNewUnlimitedBoard);
+
+      document.getElementById('diff-standard').addEventListener('click', () => {
+        if (state.difficulty === 'standard') return;
+        state.difficulty = 'standard';
+        state.cells = Array(9).fill(null);
+        state.guessesLeft = 9;
+        state.gameOver = false;
+        initBoard();
+      });
+
+      document.getElementById('diff-nerd').addEventListener('click', () => {
+        if (state.difficulty === 'nerd') return;
+        state.difficulty = 'nerd';
+        state.cells = Array(9).fill(null);
+        state.guessesLeft = 9;
+        state.gameOver = false;
+        initBoard();
+      });
+
+      // Unlimited guesses toggle
+      document.getElementById('btn-toggle-inf').addEventListener('click', () => {
+        state.unlimitedGuesses = !state.unlimitedGuesses;
+        savePersistedData();
+        renderAll();
+      });
+
+      // Give Up / Finish button
+      document.getElementById('btn-give-up').addEventListener('click', () => {
+        finishGame();
+      });
+
+      // Top bar & Summary buttons
+      document.getElementById('btn-stats').addEventListener('click', openSummaryModal);
+      document.getElementById('btn-open-summary').addEventListener('click', openSummaryModal);
+      document.getElementById('btn-share-results').addEventListener('click', shareResults);
+
+      document.getElementById('btn-help').addEventListener('click', () => {
+        const m = document.getElementById('help-modal');
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+      });
+
+      // Modal close buttons
+      document.getElementById('close-search-modal').addEventListener('click', () => closeModal('search-modal'));
+      document.getElementById('close-inspector-modal').addEventListener('click', () => closeModal('inspector-modal'));
+      document.getElementById('close-summary-modal').addEventListener('click', () => closeModal('summary-modal'));
+      document.getElementById('close-help-modal').addEventListener('click', () => closeModal('help-modal'));
+      document.getElementById('btn-start-playing').addEventListener('click', () => closeModal('help-modal'));
+
+      // Close modals on backdrop click
+      ['search-modal', 'inspector-modal', 'summary-modal', 'help-modal'].forEach(id => {
+        document.getElementById(id).addEventListener('click', e => {
+          if (e.target.id === id) closeModal(id);
+        });
+      });
+
+      // Start countdown timer
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    });
+  </script>
+</body>
+</html>

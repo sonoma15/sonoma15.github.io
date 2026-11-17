@@ -46,7 +46,7 @@
 
     /* Subtle starry globe aura */
     .globe-bg {
-      background-image: 
+      background-image:
         radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.4) 1px, transparent 0),
         radial-gradient(1.5px 1.5px at 82% 12%, rgba(245,184,65,0.45) 1px, transparent 0),
         radial-gradient(1px 1px at 45% 75%, rgba(56,189,248,0.35) 1px, transparent 0),
@@ -201,7 +201,7 @@
     <!-- THE 3x3 INTERACTIVE GRID -->
     <div class="w-full max-w-[540px] select-none">
       <div class="grid grid-cols-4 gap-2 sm:gap-3">
-        
+
         <!-- Top-Left Corner Emblem -->
         <div class="aspect-square rounded-2xl bg-universal-950/70 border border-universal-gold/25 flex flex-col items-center justify-center p-2 text-center shadow-inner">
           <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-universal-gold/10 border border-universal-gold/30 flex items-center justify-center mb-1">
@@ -240,8 +240,8 @@
     <!-- Bottom Action Banner (Shown when Game Over) -->
     <div id="game-over-banner" class="hidden w-full max-w-[540px] mt-6 p-4 rounded-2xl bg-gradient-to-r from-universal-800 via-universal-900 to-universal-800 border border-universal-gold/40 shadow-marquee flex flex-col sm:flex-row items-center justify-between gap-3 animate-pop">
       <div class="text-center sm:text-left">
-        <h3 class="font-display font-bold text-universal-gold text-base">Grid Complete!</h3>
-        <p class="text-xs text-slate-300">Click any cell to inspect valid answers or view your summary.</p>
+        <h3 id="game-over-banner-title" class="font-display font-bold text-universal-gold text-base">Grid Complete!</h3>
+        <p id="game-over-banner-reason" class="text-xs text-slate-300">Click any cell to inspect valid answers or view your summary.</p>
       </div>
       <div class="flex items-center gap-2">
         <button id="btn-open-summary" class="px-4 py-2 rounded-xl bg-universal-gold hover:bg-amber-400 text-universal-950 font-bold text-xs shadow transition active:scale-95">
@@ -281,7 +281,7 @@
           <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <input id="attraction-search-input" type="text" autocomplete="off" placeholder="Search rides, shows, or coasters (e.g. Flying Dinosaur, VelociCoaster)..." 
+          <input id="attraction-search-input" type="text" autocomplete="off" placeholder="Search rides, shows, or coasters (e.g. Flying Dinosaur, VelociCoaster)..."
             class="w-full pl-11 pr-4 py-3 rounded-2xl bg-universal-950 border border-white/15 focus:border-universal-gold focus:outline-none text-sm text-white placeholder-slate-500" />
         </div>
 
@@ -337,6 +337,11 @@
       </div>
 
       <div class="p-5 space-y-5">
+        <!-- Auto-Loss / Outcome Reason Alert -->
+        <div id="summary-loss-reason" class="hidden p-3 rounded-2xl bg-rose-500/15 border border-rose-500/40 text-rose-200 text-xs text-center font-medium">
+          <!-- Populated when game ends due to impossible-to-win state -->
+        </div>
+
         <!-- Current Game Score Highlights -->
         <div class="grid grid-cols-2 gap-3">
           <div class="bg-universal-950/90 border border-white/10 rounded-2xl p-3 text-center">
@@ -468,7 +473,7 @@
       { id: 'yoshis-adventure', name: 'Yoshi’s Adventure', parks: ['EPIC', 'USJ'], opened: 2021, type: ['dark-ride'], indoor: false, water: false, ip: ['nintendo'], singleRider: false, heightReq: 34, popularity: 21 },
       { id: 'mine-cart-madness', name: 'Mine-Cart Madness', parks: ['EPIC', 'USJ'], opened: 2024, type: ['coaster'], indoor: false, water: false, ip: ['nintendo'], singleRider: true, heightReq: 40, popularity: 33 },
       { id: 'minion-mayhem', name: 'Despicable Me Minion Mayhem', parks: ['USF', 'USH', 'USJ', 'USB'], opened: 2012, type: ['simulator'], indoor: true, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 40, popularity: 29 },
-      { id: 'villain-con-minion-blast', name: 'Illumination’s Villain-Con Minion Blast', parks: ['USF', 'USJ', 'USS'], opened: 2023, type: ['interactive'], indoor: true, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 0, popularity: 16 },
+      { id: 'villain-con-minion-blast', name: 'Illumination’s Villain-Con Minion Blast', parks: ['USF', 'USJ'], opened: 2023, type: ['interactive'], indoor: true, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 0, popularity: 16 },
       { id: 'simpsons-ride', name: 'The Simpsons Ride', parks: ['USF', 'USH'], opened: 2008, type: ['simulator'], indoor: true, water: false, ip: ['tv'], singleRider: false, heightReq: 40, popularity: 25 },
       { id: 'jurassic-park-river-adventure', name: 'Jurassic Park River Adventure / The Ride', parks: ['IOA', 'USJ'], opened: 1996, type: ['water-ride', 'dark-ride'], indoor: false, water: true, ip: ['movie', 'jurassic', 'spielberg'], singleRider: true, heightReq: 42, popularity: 30 },
       { id: 'waterworld-show', name: 'WaterWorld (Stunt Show)', parks: ['USH', 'USJ', 'USS', 'USB'], opened: 1995, type: ['show', 'water-ride'], indoor: false, water: true, ip: ['movie'], singleRider: false, heightReq: 0, popularity: 24 },
@@ -512,7 +517,7 @@
       { id: 'constellation-carousel', name: 'Constellation Carousel', parks: ['EPIC'], opened: 2025, type: ['flat-ride'], indoor: false, water: false, ip: ['original'], singleRider: false, heightReq: 0, popularity: 9 },
 
       // --- UNIVERSAL STUDIOS HOLLYWOOD (USH) EXCLUSIVES ---
-      { id: 'studio-tour', name: 'World-Famous Studio Tour', parks: ['USH'], opened: 1964, type: ['dark-ride', 'simulator'], indoor: false, water: false, ip: ['movie', 'jurassic', 'spielberg'], singleRider: false, heightReq: 0, popularity: 35 },
+      { id: 'studio-tour', name: 'World-Famous Studio Tour', parks: ['USH'], opened: 1964, type: ['dark-ride', 'simulator'], indoor: false, water: false, ip: ['jurassic', 'spielberg'], singleRider: false, heightReq: 0, popularity: 35 },
       { id: 'hollywood-drift', name: 'Fast & Furious: Hollywood Drift', parks: ['USH'], opened: 2026, type: ['coaster'], indoor: false, water: false, ip: ['movie'], singleRider: true, heightReq: 48, popularity: 34 },
       { id: 'jurassic-world-the-ride', name: 'Jurassic World – The Ride', parks: ['USH'], opened: 2019, type: ['water-ride', 'dark-ride'], indoor: false, water: true, ip: ['movie', 'jurassic'], singleRider: true, heightReq: 42, popularity: 28 },
       { id: 'secret-life-of-pets', name: 'The Secret Life of Pets: Off the Leash', parks: ['USH'], opened: 2021, type: ['dark-ride'], indoor: true, water: false, ip: ['dreamworks-illumination', 'movie'], singleRider: false, heightReq: 34, popularity: 20 },
@@ -749,6 +754,7 @@
       guessesLeft: 9,
       unlimitedGuesses: false,
       gameOver: false,
+      lossReason: null,
       activeCellIndex: null,
       stats: {
         played: 0,
@@ -773,6 +779,7 @@
           state.guessesLeft = saved.dailySave.guessesLeft;
           state.unlimitedGuesses = saved.dailySave.unlimitedGuesses || false;
           state.gameOver = saved.dailySave.gameOver;
+          state.lossReason = saved.dailySave.lossReason || null;
           state.difficulty = saved.dailySave.difficulty || state.difficulty;
         }
       } catch (e) {
@@ -791,13 +798,93 @@
             cells: state.cells,
             guessesLeft: state.guessesLeft,
             unlimitedGuesses: state.unlimitedGuesses,
-            gameOver: state.gameOver
+            gameOver: state.gameOver,
+            lossReason: state.lossReason
           } : JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}').dailySave
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
       } catch (e) {
         console.warn('Could not save state', e);
       }
+    }
+
+    /**
+     * Checks whether the current board can still be won (9/9 completed).
+     * Returns { possible: true } or { possible: false, reason: string }.
+     */
+    function canStillWinGrid() {
+      const unsolvedIndices = [];
+      const usedIds = new Set();
+
+      for (let i = 0; i < 9; i++) {
+        if (state.cells[i]) {
+          usedIds.add(state.cells[i].attraction.id);
+        } else {
+          unsolvedIndices.push(i);
+        }
+      }
+
+      const unsolvedCount = unsolvedIndices.length;
+      if (unsolvedCount === 0) return { possible: true };
+
+      // 1. Remaining Guesses Check (when finite guesses are active)
+      if (!state.unlimitedGuesses && state.guessesLeft < unsolvedCount) {
+        return {
+          possible: false,
+          reason: state.guessesLeft === 0
+            ? `Out of guesses with ${unsolvedCount} cell${unsolvedCount === 1 ? '' : 's'} remaining!`
+            : `Impossible to win: only ${state.guessesLeft} guess${state.guessesLeft === 1 ? '' : 'es'} left for ${unsolvedCount} remaining cells!`
+        };
+      }
+
+      // 2. Exhausted Valid Answers & Distinct Assignment (Bipartite Matching) Check
+      const unusedAttractions = ATTRACTIONS.filter(a => !usedIds.has(a.id));
+      const candidatesPerCell = unsolvedIndices.map(cellIdx => {
+        const r = Math.floor(cellIdx / 3);
+        const c = cellIdx % 3;
+        const rowCat = state.board.rows[r];
+        const colCat = state.board.cols[c];
+        return {
+          cellIdx,
+          rowLabel: rowCat.label,
+          colLabel: colCat.label,
+          matches: unusedAttractions.filter(a => rowCat.test(a) && colCat.test(a))
+        };
+      });
+
+      // Check if any individual unsolved cell has 0 remaining valid unused attractions
+      const emptyCell = candidatesPerCell.find(item => item.matches.length === 0);
+      if (emptyCell) {
+        return {
+          possible: false,
+          reason: `Impossible to win: no unused attractions remain for "${emptyCell.rowLabel} × ${emptyCell.colLabel}"!`
+        };
+      }
+
+      // Order unsolved cells by fewest valid candidates first (MRV heuristic)
+      const ordered = [...candidatesPerCell].sort((a, b) => a.matches.length - b.matches.length);
+      const assigned = new Set();
+
+      function canAssignRemaining(step) {
+        if (step === ordered.length) return true;
+        for (const attr of ordered[step].matches) {
+          if (!assigned.has(attr.id)) {
+            assigned.add(attr.id);
+            if (canAssignRemaining(step + 1)) return true;
+            assigned.delete(attr.id);
+          }
+        }
+        return false;
+      }
+
+      if (!canAssignRemaining(0)) {
+        return {
+          possible: false,
+          reason: 'Impossible to win: remaining unused attractions cannot simultaneously fill all open cells!'
+        };
+      }
+
+      return { possible: true };
     }
 
     /**
@@ -820,6 +907,7 @@
       state.cells = Array(9).fill(null);
       state.guessesLeft = 9;
       state.gameOver = false;
+      state.lossReason = null;
       initBoard();
     }
 
@@ -831,12 +919,14 @@
         state.cells = Array(9).fill(null);
         state.guessesLeft = 9;
         state.gameOver = false;
+        state.lossReason = null;
         loadPersistedData();
       } else {
         state.randomSeed = Math.floor(Math.random() * 10000000);
         state.cells = Array(9).fill(null);
         state.guessesLeft = 9;
         state.gameOver = false;
+        state.lossReason = null;
       }
       initBoard();
     }
@@ -961,8 +1051,19 @@
 
       // Game over banner
       const banner = document.getElementById('game-over-banner');
+      const bannerTitle = document.getElementById('game-over-banner-title');
+      const bannerReason = document.getElementById('game-over-banner-reason');
       if (state.gameOver) {
         banner.classList.remove('hidden');
+        if (state.lossReason) {
+          bannerTitle.textContent = 'Game Over — Impossible to Complete';
+          bannerTitle.className = 'font-display font-bold text-rose-400 text-base';
+          bannerReason.textContent = `${state.lossReason} Click any cell to inspect valid answers.`;
+        } else {
+          bannerTitle.textContent = getSolvedCount() === 9 ? 'Perfect 9/9 Grid Complete!' : 'Grid Complete!';
+          bannerTitle.className = 'font-display font-bold text-universal-gold text-base';
+          bannerReason.textContent = 'Click any cell to inspect valid answers or view your summary.';
+        }
       } else {
         banner.classList.add('hidden');
       }
@@ -1027,7 +1128,7 @@
       list.innerHTML = filtered.map(a => {
         const isUsed = usedIds.has(a.id);
         return `
-          <button type="button" data-attr-id="${a.id}" ${isUsed ? 'disabled' : ''} 
+          <button type="button" data-attr-id="${a.id}" ${isUsed ? 'disabled' : ''}
             class="w-full text-left p-3.5 rounded-xl border transition flex items-center justify-between gap-3 ${
               isUsed
                 ? 'bg-white/5 border-white/5 opacity-45 cursor-not-allowed'
@@ -1075,12 +1176,17 @@
         state.cells[idx] = { attraction, rarity };
         closeModal('search-modal');
 
-        // Check win or out of guesses
-        if (getSolvedCount() === 9 || (!state.unlimitedGuesses && state.guessesLeft === 0)) {
-          finishGame();
+        // Check win or impossible-to-win feasibility
+        if (getSolvedCount() === 9) {
+          finishGame(null);
         } else {
-          savePersistedData();
-          renderAll();
+          const feasibility = canStillWinGrid();
+          if (!feasibility.possible) {
+            finishGame(feasibility.reason);
+          } else {
+            savePersistedData();
+            renderAll();
+          }
         }
       } else {
         // Wrong guess feedback (does not spoil which park it is at)
@@ -1100,11 +1206,12 @@
         void alertBox.offsetWidth;
         alertBox.classList.add('animate-shake');
 
-        if (!state.unlimitedGuesses && state.guessesLeft === 0) {
+        const feasibility = canStillWinGrid();
+        if (!feasibility.possible) {
           setTimeout(() => {
             closeModal('search-modal');
-            finishGame();
-          }, 900);
+            finishGame(feasibility.reason);
+          }, 950);
         } else {
           savePersistedData();
           renderAll();
@@ -1112,29 +1219,36 @@
       }
     }
 
-    function finishGame() {
+    function finishGame(lossReason = null) {
       if (state.gameOver) {
         openSummaryModal();
         return;
       }
       state.gameOver = true;
+      state.lossReason = lossReason;
       const solved = getSolvedCount();
       const rarity = calculateRarityScore();
 
       // Record career stats
       state.stats.played += 1;
-      if (solved === 9) state.stats.perfectGrids += 1;
-      if (state.stats.bestRarity === null || rarity < state.stats.bestRarity) {
-        state.stats.bestRarity = rarity;
+      if (solved === 9) {
+        state.stats.perfectGrids += 1;
+        if (state.stats.bestRarity === null || rarity < state.stats.bestRarity) {
+          state.stats.bestRarity = rarity;
+        }
       }
 
       if (state.mode === 'daily') {
-        if (state.stats.lastDailyCompleted === state.dailyNumber - 1) {
-          state.stats.streak += 1;
-        } else if (state.stats.lastDailyCompleted !== state.dailyNumber) {
-          state.stats.streak = 1;
+        if (solved === 9) {
+          if (state.stats.lastDailyCompleted === state.dailyNumber - 1) {
+            state.stats.streak += 1;
+          } else if (state.stats.lastDailyCompleted !== state.dailyNumber) {
+            state.stats.streak = 1;
+          }
+          state.stats.lastDailyCompleted = state.dailyNumber;
+        } else {
+          state.stats.streak = 0;
         }
-        state.stats.lastDailyCompleted = state.dailyNumber;
       }
 
       savePersistedData();
@@ -1188,6 +1302,14 @@
         state.mode === 'daily' ? `Universal Grid • Daily #${state.dailyNumber}` : 'Universal Grid • Practice Mode';
       document.getElementById('summary-score').textContent = `${solved} / 9`;
       document.getElementById('summary-rarity').textContent = rarity;
+
+      const lossReasonEl = document.getElementById('summary-loss-reason');
+      if (state.lossReason) {
+        lossReasonEl.textContent = state.lossReason;
+        lossReasonEl.classList.remove('hidden');
+      } else {
+        lossReasonEl.classList.add('hidden');
+      }
 
       // Build emoji grid (🟨 for ultra-rare <=12%, 🟩 for solved, ⬛ for missed)
       let emojiLines = [];
@@ -1313,7 +1435,37 @@
         state.cells = Array(9).fill(null);
         state.guessesLeft = 9;
         state.gameOver = false;
+        state.lossReason = null;
         initBoard();
+      });
+
+      document.getElementById('diff-nerd').addEventListener('click', () => {
+        if (state.difficulty === 'nerd') return;
+        state.difficulty = 'nerd';
+        state.cells = Array(9).fill(null);
+        state.guessesLeft = 9;
+        state.gameOver = false;
+        state.lossReason = null;
+        initBoard();
+      });
+
+      // Unlimited guesses toggle
+      document.getElementById('btn-toggle-inf').addEventListener('click', () => {
+        state.unlimitedGuesses = !state.unlimitedGuesses;
+        if (!state.gameOver && !state.unlimitedGuesses) {
+          const feasibility = canStillWinGrid();
+          if (!feasibility.possible) {
+            finishGame(feasibility.reason);
+            return;
+          }
+        }
+        savePersistedData();
+        renderAll();
+      });
+
+      // Give Up / Finish button
+      document.getElementById('btn-give-up').addEventListener('click', () => {
+        finishGame(null);
       });
 
       document.getElementById('diff-nerd').addEventListener('click', () => {

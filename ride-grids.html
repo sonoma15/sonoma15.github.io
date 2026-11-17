@@ -578,7 +578,7 @@
       // Regional & Multi-Park Categories
       { id: 'region-orlando', label: 'Universal Orlando Resort', short: 'Orlando', group: 'park', difficulty: 'standard', icon: '☀️', test: a => a.parks.some(p => ['USF', 'IOA', 'EPIC', 'VB'].includes(p)) },
       { id: 'region-asia', label: 'Asia-Pacific Park (USJ / USS / USB)', short: 'Asia-Pac', group: 'park', difficulty: 'standard', icon: '🌏', test: a => a.parks.some(p => ['USJ', 'USS', 'USB'].includes(p)) },
-      { id: 'multi-park-clone', label: 'Operates in 2+ Universal Parks', short: 'Multi-Park', group: 'spec', difficulty: 'nerd', icon: '🌐', test: a => a.parks.length >= 2 },
+      { id: 'multi-park-clone', label: 'Operates in 2+ Universal Parks', short: 'Multi-Park', group: 'spec', difficulty: 'standard', icon: '🌐', test: a => a.parks.length >= 2 },
 
       // Ride Types
       { id: 'type-coaster', label: 'Roller Coaster', short: 'Coaster', group: 'type', difficulty: 'standard', icon: '🎢', test: a => a.type.includes('coaster') },

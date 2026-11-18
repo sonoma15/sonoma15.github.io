@@ -856,7 +856,7 @@
       restoreCurrentDailyState();
       
       // Re-render UI
-      initGameUI();
+      initBoard();
       savePersistedData();
     }
 
@@ -898,6 +898,7 @@
         state.guessesLeft = 9;
         state.gameOver = false;
       }
+      
       initBoard();
     }
 
@@ -1368,21 +1369,11 @@
       document.getElementById('btn-new-random').addEventListener('click', startNewUnlimitedBoard);
 
       document.getElementById('diff-standard').addEventListener('click', () => {
-        if (state.difficulty === 'standard') return;
-        state.difficulty = 'standard';
-        state.cells = Array(9).fill(null);
-        state.guessesLeft = 9;
-        state.gameOver = false;
-        initBoard();
+        switchDifficulty('standard');
       });
 
       document.getElementById('diff-nerd').addEventListener('click', () => {
-        if (state.difficulty === 'nerd') return;
-        state.difficulty = 'nerd';
-        state.cells = Array(9).fill(null);
-        state.guessesLeft = 9;
-        state.gameOver = false;
-        initBoard();
+        switchDifficulty('nerd');
       });
 
       // Unlimited guesses toggle

@@ -831,7 +831,7 @@
         if (existingSave.board && existingSave.board.rows.length > 0) {
           state.board = existingSave.board;
         } else {
-          generateDailyBoard(); // fallback if board wasn't cached
+          initBoard(); // fallback if board wasn't cached
         }
       } else {
         // Fresh daily puzzle for this difficulty
@@ -839,7 +839,7 @@
         state.guessesLeft = 9;
         state.unlimitedGuesses = false;
         state.gameOver = false;
-        generateDailyBoard();
+        initBoard();
       }
     }
 

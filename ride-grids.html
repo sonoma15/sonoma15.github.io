@@ -759,7 +759,9 @@
         lastDailyCompleted: null,
         perfectGrids: 0,
         bestRarity: null
-      }
+      },
+      // Store daily saves per difficulty: { standard: {...}, nerd: {...} }
+      dailySaves: {}
     };
 
     function loadPersistedData() {
@@ -769,33 +771,63 @@
         const saved = JSON.parse(raw);
         if (saved.stats) state.stats = { ...state.stats, ...saved.stats };
         if (saved.difficulty) state.difficulty = saved.difficulty;
+        if (saved.dailySaves) state.dailySaves = saved.dailySaves;
 
-        // Restore today's daily grid if saved
+        // Backward compatibility if older single dailySave exists
         if (saved.dailySave && saved.dailySave.dailyNumber === state.dailyNumber) {
-          state.cells = saved.dailySave.cells;
-          state.guessesLeft = saved.dailySave.guessesLeft;
-          state.unlimitedGuesses = saved.dailySave.unlimitedGuesses || false;
-          state.gameOver = saved.dailySave.gameOver;
-          state.difficulty = saved.dailySave.difficulty || state.difficulty;
+          const diffKey = saved.dailySave.difficulty || 'standard';
+          if (!state.dailySaves[diffKey]) {
+            state.dailySaves[diffKey] = saved.dailySave;
+          }
         }
+
+        // Load active difficulty's daily save if it matches today's puzzle number
+        loadDailyStateForCurrentDifficulty();
       } catch (e) {
         console.warn('Could not load saved state', e);
       }
     }
 
+    function loadDailyStateForCurrentDifficulty() {
+      const currentSave = state.dailySaves[state.difficulty];
+      if (currentSave && currentSave.dailyNumber === state.dailyNumber) {
+        state.cells = [...currentSave.cells];
+        state.guessesLeft = currentSave.guessesLeft;
+        state.unlimitedGuesses = currentSave.unlimitedGuesses || false;
+        state.gameOver = currentSave.gameOver;
+      } else {
+        // Reset for today's new puzzle on this difficulty
+        resetDailyBoardForCurrentDifficulty();
+      }
+    }
+
+    function resetDailyBoardForCurrentDifficulty() {
+      state.cells = Array(9).fill(null);
+      state.guessesLeft = 9;
+      state.unlimitedGuesses = false;
+      state.gameOver = false;
+      // Generate or load the specific board layout for this difficulty & daily number
+      generateBoardForCurrentModeAndDifficulty();
+    }
+
     function savePersistedData() {
       try {
-        const payload = {
-          stats: state.stats,
-          difficulty: state.difficulty,
-          dailySave: state.mode === 'daily' ? {
+        // If we are in daily mode, update the save slot for the active difficulty
+        if (state.mode === 'daily') {
+          state.dailySaves[state.difficulty] = {
             dailyNumber: state.dailyNumber,
             difficulty: state.difficulty,
             cells: state.cells,
             guessesLeft: state.guessesLeft,
             unlimitedGuesses: state.unlimitedGuesses,
             gameOver: state.gameOver
-          } : JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}').dailySave
+          };
+        }
+
+        const payload = {
+          stats: state.stats,
+          difficulty: state.difficulty,
+          dailySaves: state.dailySaves
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
       } catch (e) {
